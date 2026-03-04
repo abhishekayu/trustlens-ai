@@ -1,0 +1,246 @@
+{
+  "analysis_id": "a1b2c3d4e5f6789012345678",
+  "url": "https://secure-paypa1-verify.example.com/login",
+  "submitted_at": "2025-01-15T10:30:00Z",
+  "completed_at": "2025-01-15T10:30:12Z",
+  "status": "completed",
+
+  "trust_score": {
+    "overall_score": 18.5,
+    "risk_level": "high",
+    "risk_category": "High Risk",
+    "confidence": 0.91,
+    "rule_score": 15.2,
+    "ai_confidence": 0.89,
+    "components": [
+      {
+        "component": "heuristic_rules",
+        "raw_score": 20.0,
+        "weight": 0.30,
+        "weighted_score": 6.0,
+        "confidence": 0.95,
+        "signals": [
+          "SSL certificate mismatch with domain",
+          "Page contains password input with suspicious action URL",
+          "Multiple phishing URL patterns detected"
+        ]
+      },
+      {
+        "component": "brand_impersonation",
+        "raw_score": 8.0,
+        "weight": 0.25,
+        "weighted_score": 2.0,
+        "confidence": 0.94,
+        "signals": [
+          "Domain resembles 'PayPal' (similarity: 0.87, impersonation probability: 0.92)",
+          "Typosquatting detected: 'paypa1' vs 'paypal'"
+        ]
+      },
+      {
+        "component": "behavioral_analysis",
+        "raw_score": 25.0,
+        "weight": 0.20,
+        "weighted_score": 5.0,
+        "confidence": 0.88,
+        "signals": [
+          "3 suspicious redirects through different domains",
+          "Page loaded hidden iframe pointing to external domain"
+        ]
+      },
+      {
+        "component": "domain_intelligence",
+        "raw_score": 10.0,
+        "weight": 0.15,
+        "weighted_score": 1.5,
+        "confidence": 0.92,
+        "signals": [
+          "Domain registered 3 days ago",
+          "Uses suspicious TLD: .example.com",
+          "Registrar: Budget Domains LLC"
+        ]
+      },
+      {
+        "component": "security_headers",
+        "raw_score": 35.0,
+        "weight": 0.10,
+        "weighted_score": 3.5,
+        "confidence": 1.0,
+        "signals": [
+          "Missing Content-Security-Policy",
+          "Missing Strict-Transport-Security",
+          "Missing X-Frame-Options"
+        ]
+      }
+    ],
+    "explanation": "Very high risk – strong brand impersonation with typosquatting, newly registered domain, and credential harvesting indicators.",
+    "ai_explanation": "This URL exhibits strong signs of a PayPal phishing attempt. The domain uses character substitution ('1' for 'l') to mimic PayPal's brand. The page contains a login form that submits credentials to a third-party server. Combined with the domain being only 3 days old and missing critical security headers, this strongly indicates a credential harvesting operation targeting PayPal users."
+  },
+
+  "domain_intelligence": {
+    "domain": "secure-paypa1-verify.example.com",
+    "registered_domain": "example.com",
+    "tld": "com",
+    "is_suspicious_tld": false,
+    "domain_age_days": 3,
+    "registrar": "Budget Domains LLC",
+    "registration_date": "2025-01-12",
+    "expiration_date": "2026-01-12",
+    "dns_records": {
+      "A": ["203.0.113.42"],
+      "MX": [],
+      "NS": ["ns1.budgetdns.example", "ns2.budgetdns.example"]
+    },
+    "age_score": 5.0,
+    "tld_score": 100.0,
+    "domain_score": 12.5,
+    "signals": [
+      "Domain is only 3 days old (< 30 days is suspicious)",
+      "No MX records configured"
+    ]
+  },
+
+  "rule_signals": [
+    {
+      "rule_id": "ssl_001",
+      "rule_name": "SSL Certificate",
+      "category": "ssl",
+      "severity": "high",
+      "description": "SSL certificate subject does not match the domain",
+      "evidence": "cert_cn=*.example.com, requested=secure-paypa1-verify.example.com",
+      "score_impact": 30.0
+    },
+    {
+      "rule_id": "form_001",
+      "rule_name": "Suspicious Forms",
+      "category": "forms",
+      "severity": "critical",
+      "description": "Login form submits credentials to cross-origin endpoint",
+      "evidence": "form action=https://collect.malicious-server.example/steal",
+      "score_impact": 40.0
+    },
+    {
+      "rule_id": "url_001",
+      "rule_name": "URL Patterns",
+      "category": "url",
+      "severity": "high",
+      "description": "URL contains multiple phishing indicators: 'secure', 'verify', 'login'",
+      "evidence": "path=/login, subdomain=secure-paypa1-verify",
+      "score_impact": 25.0
+    },
+    {
+      "rule_id": "content_001",
+      "rule_name": "Page Content",
+      "category": "content",
+      "severity": "medium",
+      "description": "Page uses urgency language typical of phishing",
+      "evidence": "Found: 'Your account will be suspended', 'Verify immediately'",
+      "score_impact": 15.0
+    }
+  ],
+
+  "ai_insights": {
+    "deception_indicators": [
+      "Character substitution in domain name ('paypa1' imitates 'paypal')",
+      "Login form submits to third-party server",
+      "Page uses urgency and fear tactics to manipulate user action",
+      "No legitimate PayPal branding assets (uses low-resolution images)"
+    ],
+    "legitimacy_indicators": [
+      "Has valid SSL certificate (wildcard)"
+    ],
+    "social_engineering_tactics": [
+      "Urgency: 'Verify your identity within 24 hours'",
+      "Fear: 'Your account will be permanently suspended'",
+      "Authority: Uses PayPal logo and color scheme"
+    ],
+    "intent": "credential_harvest",
+    "intent_confidence": 0.94,
+    "classifier": {
+      "impersonation": 0.92,
+      "credential_harvesting": 0.95,
+      "urgency_manipulation": 0.88,
+      "fear_tactics": 0.82,
+      "payment_demand": 0.15,
+      "deception_confidence": 0.89,
+      "reasoning": "The page impersonates PayPal using typosquatting and visual mimicry. It contains a credential harvesting form that submits to an external server. The content employs urgency ('24 hours') and fear ('permanently suspended') to pressure users into entering their credentials."
+    },
+    "explanation": "High-confidence phishing page targeting PayPal users via credential harvesting with urgency-driven social engineering."
+  },
+
+  "brand_matches": [
+    {
+      "brand_name": "PayPal",
+      "similarity_score": 0.87,
+      "matched_features": ["domain_name", "page_title", "logo_reference", "color_scheme"],
+      "domain_similarity": 0.83,
+      "visual_similarity": 0.0,
+      "content_similarity": 0.78,
+      "impersonation_probability": 0.92,
+      "is_official": false
+    }
+  ],
+
+  "behavioral_signals": [
+    {
+      "signal_type": "suspicious_redirect",
+      "description": "3 redirects through different domains before landing page",
+      "severity": "high",
+      "evidence": "example-tracker.com → redir.example.net → secure-paypa1-verify.example.com",
+      "score_impact": 20.0
+    },
+    {
+      "signal_type": "hidden_iframe",
+      "description": "Hidden iframe loading external resource",
+      "severity": "medium",
+      "evidence": "iframe src=https://analytics.malicious-server.example/track style=display:none",
+      "score_impact": 10.0
+    }
+  ],
+
+  "security_headers": {
+    "is_https": true,
+    "has_hsts": false,
+    "has_csp": false,
+    "has_x_frame_options": false,
+    "has_x_content_type_options": true,
+    "has_referrer_policy": false,
+    "has_permissions_policy": false,
+    "missing_headers": [
+      "Strict-Transport-Security",
+      "Content-Security-Policy",
+      "X-Frame-Options",
+      "Referrer-Policy",
+      "Permissions-Policy"
+    ],
+    "header_score": 35.0,
+    "signals": [
+      "Missing HSTS header – vulnerable to SSL stripping",
+      "Missing CSP header – vulnerable to XSS injection"
+    ]
+  },
+
+  "redirect_chain": [
+    {
+      "url": "https://example-tracker.com/r?id=abc123",
+      "status_code": 302,
+      "headers": {}
+    },
+    {
+      "url": "https://redir.example.net/go/paypal",
+      "status_code": 301,
+      "headers": {}
+    },
+    {
+      "url": "https://secure-paypa1-verify.example.com/login",
+      "status_code": 200,
+      "headers": {}
+    }
+  ],
+
+  "page_title": "PayPal - Verify Your Account",
+  "final_url": "https://secure-paypa1-verify.example.com/login",
+  "ssl_valid": true,
+  "screenshot_url": "/screenshots/a1b2c3d4e5f6789012345678.png",
+
+  "methodology": "TrustLens uses a weighted hybrid scoring system combining rule-based heuristic signals (70%) and AI deception confidence (30%). Rule signals include domain intelligence, brand impersonation, behavioral redirect analysis, security headers, and content analysis. AI provides advisory signals only – it never directly determines the final risk level. Categories: Safe (75-100), Low Risk (50-74), Suspicious (25-49), High Risk (0-24)."
+}
