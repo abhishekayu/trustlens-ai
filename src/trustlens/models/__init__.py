@@ -75,6 +75,7 @@ class CrawlResult(BaseModel):
     scripts: list[str] = Field(default_factory=list)
     ssl_info: Optional[dict[str, Any]] = None
     screenshot_path: Optional[str] = None
+    screenshot_base64: Optional[str] = None
     headers: dict[str, str] = Field(default_factory=dict)
     cookies: list[dict[str, Any]] = Field(default_factory=list)
     load_time_ms: int = 0
@@ -130,6 +131,7 @@ class AIClassifierResult(BaseModel):
     urgency_manipulation: float = 0.0       # 0-1
     fear_tactics: float = 0.0              # 0-1
     payment_demand: float = 0.0            # 0-1
+    data_collection: float = 0.0           # 0-1
     deception_confidence: float = 0.0      # 0-1 overall
     reasoning: str = ""
     raw_response: Optional[dict[str, Any]] = None
@@ -146,6 +148,7 @@ class AIAnalysisResult(BaseModel):
     risk_score: float = 0.0  # 0-100
     explanation: str = ""
     classifier: Optional[AIClassifierResult] = None
+    url_perspective: Optional[dict[str, Any]] = None
     raw_response: Optional[dict[str, Any]] = None
 
 
@@ -262,6 +265,57 @@ class CommunityConsensus(BaseModel):
 
 
 # ── Threat Intelligence ──────────────────────────────────────────────────────
+
+
+# ── Payment Detection ─────────────────────────────────────────────────────
+
+
+class PaymentDetectionResult(BaseModel):
+    """Result from payment form/gateway detection analysis."""
+
+    has_payment_form: bool = False
+    payment_gateways_detected: list[str] = Field(default_factory=list)
+    payment_form_fields: list[str] = Field(default_factory=list)
+    crypto_addresses: list[dict[str, str]] = Field(default_factory=list)  # {type, address}
+    suspicious_payment_patterns: list[str] = Field(default_factory=list)
+    legitimate_payment_indicators: list[str] = Field(default_factory=list)
+    payment_security_score: float = 100.0   # 0-100, 100 = secure
+    risk_level: RiskLevel = RiskLevel.SAFE
+    signals: list[str] = Field(default_factory=list)
+
+
+# ── Tracker / Malware Detection ──────────────────────────────────────────
+
+
+class TrackerInfo(BaseModel):
+    """A single detected tracker/script."""
+
+    name: str
+    category: str  # analytics, advertising, fingerprinting, social, malware, mining
+    url: str = ""
+    severity: RiskLevel = RiskLevel.LOW
+    description: str = ""
+
+
+class TrackerDetectionResult(BaseModel):
+    """Result from tracker, spyware, and malware detection analysis."""
+
+    total_trackers: int = 0
+    trackers: list[TrackerInfo] = Field(default_factory=list)
+    categories: dict[str, int] = Field(default_factory=dict)  # category → count
+    analytics_trackers: list[str] = Field(default_factory=list)
+    advertising_trackers: list[str] = Field(default_factory=list)
+    fingerprinting_scripts: list[str] = Field(default_factory=list)
+    malware_scripts: list[str] = Field(default_factory=list)
+    mining_scripts: list[str] = Field(default_factory=list)
+    suspicious_scripts: list[str] = Field(default_factory=list)
+    known_spyware: list[str] = Field(default_factory=list)
+    privacy_score: float = 100.0     # 0-100, 100 = private
+    risk_level: RiskLevel = RiskLevel.SAFE
+    signals: list[str] = Field(default_factory=list)
+
+
+# ── Threat Intelligence ──────────────────────────────────────────────────
 
 
 class ThreatFeedEntry(BaseModel):
@@ -414,6 +468,8 @@ class URLAnalysis(BaseModel):
     zeroday_suspicion: Optional[ZeroDaySuspicionResult] = None
     community_consensus: Optional[CommunityConsensus] = None
     threat_intel: Optional[ThreatIntelResult] = None
+    payment_detection: Optional[PaymentDetectionResult] = None
+    tracker_detection: Optional[TrackerDetectionResult] = None
     trust_score: Optional[TrustScore] = None
 
     error: Optional[str] = None

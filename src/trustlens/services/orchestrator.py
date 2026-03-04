@@ -36,9 +36,11 @@ from trustlens.services.analysis.brand_similarity import BrandSimilarityEngine
 from trustlens.services.analysis.content_extractor import ContentExtractor
 from trustlens.services.analysis.domain_intel import DomainIntelligenceService
 from trustlens.services.analysis.logo_detection import LogoDetectionEngine
+from trustlens.services.analysis.payment_detector import PaymentDetector
 from trustlens.services.analysis.rules import RuleEngine
 from trustlens.services.analysis.screenshot_similarity import ScreenshotSimilarityEngine
 from trustlens.services.analysis.security_headers import SecurityHeaderAnalyzer
+from trustlens.services.analysis.tracker_detector import TrackerDetector
 from trustlens.services.analysis.zeroday import ZeroDaySuspicionScorer
 from trustlens.services.community import CommunityReportingService
 from trustlens.services.crawler import CrawlerService
@@ -69,6 +71,8 @@ class AnalysisOrchestrator:
         self._scoring = ScoringEngine()
         self._zeroday = ZeroDaySuspicionScorer()
         self._logo_detector = LogoDetectionEngine()
+        self._payment_detector = PaymentDetector()
+        self._tracker_detector = TrackerDetector()
 
         # Phase 5 services (set externally via setters for DI)
         self._screenshot_engine: Optional[ScreenshotSimilarityEngine] = None
@@ -151,6 +155,8 @@ class AnalysisOrchestrator:
                 "brand": brand_engine.analyze(crawl_result, url),
                 "behavioral": self._behavioral.analyze(crawl_result, url),
                 "headers": self._header_analyzer.analyze(crawl_result),
+                "payment": self._payment_detector.analyze(crawl_result, url),
+                "tracker": self._tracker_detector.analyze(crawl_result, url),
             }
 
             if enable_domain_intel:
@@ -159,15 +165,20 @@ class AnalysisOrchestrator:
             if enable_ai:
                 tasks["ai"] = self._run_ai_analysis(crawl_result, url)
 
-            # Screenshot similarity
-            if self._screenshot_engine and crawl_result.screenshot_path:
+            # Screenshot similarity (supports both file path and in-memory base64)
+            _ss_source = crawl_result.screenshot_path or crawl_result.screenshot_base64
+            if self._screenshot_engine and _ss_source:
                 tasks["screenshot"] = self._screenshot_engine.analyze(
-                    crawl_result.screenshot_path
+                    screenshot_path=crawl_result.screenshot_path,
+                    screenshot_base64=crawl_result.screenshot_base64,
                 )
 
-            # Logo detection
-            if crawl_result.screenshot_path:
-                tasks["logo"] = self._logo_detector.analyze(crawl_result.screenshot_path)
+            # Logo detection (supports both file path and in-memory base64)
+            if _ss_source:
+                tasks["logo"] = self._logo_detector.analyze(
+                    screenshot_path=crawl_result.screenshot_path,
+                    screenshot_base64=crawl_result.screenshot_base64,
+                )
 
             # Threat intelligence
             if enable_threat_intel and self._threat_intel:
@@ -200,6 +211,8 @@ class AnalysisOrchestrator:
             analysis.logo_detection = results.get("logo")
             analysis.threat_intel = results.get("threat_intel")
             analysis.community_consensus = results.get("community")
+            analysis.payment_detection = results.get("payment")
+            analysis.tracker_detection = results.get("tracker")
 
             # ── Phase 2.5: Zero-Day Suspicion ────────────────────
             if enable_zeroday:
@@ -292,6 +305,12 @@ class AnalysisOrchestrator:
         meta_info = json.dumps(crawl.meta_tags, indent=2) if crawl.meta_tags else "None"
         ssl_info = json.dumps(crawl.ssl_info, indent=2) if crawl.ssl_info else "Unknown"
 
+        # Additional data for enhanced AI analysis
+        scripts_info = "\n".join(f"  - {s[:120]}" for s in crawl.scripts[:15]) if crawl.scripts else "None"
+        links_info = "\n".join(f"  - {l[:120]}" for l in crawl.external_links[:15]) if crawl.external_links else "None"
+        cookies_info = json.dumps(crawl.cookies[:10], indent=2, default=str) if crawl.cookies else "None"
+        headers_info = json.dumps(dict(list(crawl.headers.items())[:20]), indent=2) if crawl.headers else "None"
+
         prompt = build_analysis_prompt(
             url=url,
             final_url=crawl.final_url,
@@ -301,6 +320,10 @@ class AnalysisOrchestrator:
             redirect_chain=redirect_info,
             meta_tags=meta_info,
             ssl_info=ssl_info,
+            scripts_info=scripts_info,
+            external_links_info=links_info,
+            cookies_info=cookies_info,
+            headers_info=headers_info,
         )
 
         return await provider.get_analysis(SYSTEM_PROMPT, prompt)
@@ -319,6 +342,8 @@ class AnalysisOrchestrator:
             for m in analysis.brand_matches[:3]:
                 if not m.is_official:
                     parts.append(f"Brand: resembles {m.brand_name} (similarity: {m.similarity_score:.2f}, impersonation prob: {m.impersonation_probability:.2f})")
+                else:
+                    parts.append(f"Brand: OFFICIAL {m.brand_name} domain")
         if analysis.behavioral_signals:
             parts.append("Behavioral:")
             for b in analysis.behavioral_signals[:5]:
@@ -326,9 +351,42 @@ class AnalysisOrchestrator:
         if analysis.domain_intel:
             for s in analysis.domain_intel.signals[:3]:
                 parts.append(f"Domain: {s}")
+            if analysis.domain_intel.domain_age_days is not None:
+                parts.append(f"Domain age: {analysis.domain_intel.domain_age_days} days")
         if analysis.security_headers:
             for s in analysis.security_headers.signals[:2]:
                 parts.append(f"Headers: {s}")
+            parts.append(f"Security header score: {analysis.security_headers.header_score}/100")
+        # Payment detection
+        if analysis.payment_detection:
+            pd = analysis.payment_detection
+            if pd.has_payment_form:
+                parts.append(f"PAYMENT FORM DETECTED: fields={', '.join(pd.payment_form_fields[:5])}")
+            if pd.payment_gateways_detected:
+                parts.append(f"Payment gateways: {', '.join(pd.payment_gateways_detected[:5])}")
+            if pd.crypto_addresses:
+                parts.append(f"CRYPTO ADDRESSES FOUND: {len(pd.crypto_addresses)} addresses")
+            if pd.suspicious_payment_patterns:
+                parts.append(f"Suspicious payment patterns: {', '.join(pd.suspicious_payment_patterns[:3])}")
+            parts.append(f"Payment security score: {pd.payment_security_score}/100")
+        # Tracker detection
+        if analysis.tracker_detection:
+            td = analysis.tracker_detection
+            if td.total_trackers > 0:
+                parts.append(f"Trackers detected: {td.total_trackers} total")
+                if td.analytics_trackers:
+                    parts.append(f"  Analytics: {', '.join(td.analytics_trackers[:5])}")
+                if td.advertising_trackers:
+                    parts.append(f"  Advertising: {', '.join(td.advertising_trackers[:5])}")
+                if td.fingerprinting_scripts:
+                    parts.append(f"  FINGERPRINTING: {', '.join(td.fingerprinting_scripts[:3])}")
+                if td.malware_scripts:
+                    parts.append(f"  MALWARE: {', '.join(td.malware_scripts[:3])}")
+                if td.mining_scripts:
+                    parts.append(f"  CRYPTO MINING: {', '.join(td.mining_scripts[:3])}")
+                if td.known_spyware:
+                    parts.append(f"  SPYWARE: {', '.join(td.known_spyware[:3])}")
+                parts.append(f"Privacy score: {td.privacy_score}/100")
         # Phase 5 signals
         if analysis.screenshot_similarity and analysis.screenshot_similarity.is_visual_clone:
             parts.append(f"VISUAL CLONE: matches {analysis.screenshot_similarity.closest_brand} "
@@ -343,4 +401,11 @@ class AnalysisOrchestrator:
         if analysis.community_consensus and analysis.community_consensus.total_reports > 0:
             c = analysis.community_consensus
             parts.append(f"Community: {c.total_reports} reports (crowd risk: {c.crowd_risk_score}/100)")
+        # AI classification summary
+        if analysis.ai_result and analysis.ai_result.classifier:
+            ai = analysis.ai_result
+            parts.append(f"AI Intent: {ai.intent_classification.value} (confidence: {ai.intent_confidence:.2f})")
+            if ai.url_perspective and isinstance(ai.url_perspective, dict):
+                parts.append(f"Page purpose: {ai.url_perspective.get('purpose', 'unknown')}")
+                parts.append(f"Content category: {ai.url_perspective.get('content_category', 'unknown')}")
         return "\n".join(parts)

@@ -22,12 +22,14 @@ from trustlens.models import (
     DomainIntelligence,
     IntentCategory,
     LogoDetectionResult,
+    PaymentDetectionResult,
     RiskCategory,
     RiskLevel,
     RuleSignal,
     ScreenshotSimilarityResult,
     SecurityHeaderResult,
     ThreatIntelResult,
+    TrackerDetectionResult,
     ZeroDaySuspicionResult,
 )
 
@@ -186,6 +188,7 @@ class CrawlDetails(BaseModel):
     cookies_count: int = 0
     screenshot_path: Optional[str] = None
     screenshot_url: Optional[str] = None
+    screenshot_base64: Optional[str] = None
     errors: list[str] = Field(default_factory=list)
 
 
@@ -243,6 +246,7 @@ class AIAnalysisSummary(BaseModel):
     risk_score: float = 0.0
     explanation: str = ""
     classifier: Optional[AIClassifierResult] = None
+    url_perspective: Optional[dict[str, Any]] = None
     available: bool = False
 
 
@@ -257,6 +261,8 @@ class DeepDiveData(BaseModel):
     zeroday_suspicion: Optional[ZeroDaySuspicionResult] = None
     threat_intel: Optional[ThreatIntelResult] = None
     community_consensus: Optional[CommunityConsensus] = None
+    payment_detection: Optional[PaymentDetectionResult] = None
+    tracker_detection: Optional[TrackerDetectionResult] = None
     behavioral_signals: list[BehavioralSignal] = Field(default_factory=list)
     rule_signals: list[RuleSignal] = Field(default_factory=list)
 

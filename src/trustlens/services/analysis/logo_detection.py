@@ -181,11 +181,44 @@ class LogoDetectionEngine:
 
         return result
 
-    async def analyze(self, screenshot_path: Optional[str]) -> LogoDetectionResult:
-        """Async wrapper for the orchestrator pipeline."""
-        if not screenshot_path or not Path(screenshot_path).exists():
+    async def analyze(
+        self,
+        screenshot_path: Optional[str] = None,
+        screenshot_base64: Optional[str] = None,
+    ) -> LogoDetectionResult:
+        """Async wrapper for the orchestrator pipeline.
+
+        Accepts a file path OR a base64 data-URL.  When only base64 is
+        provided, the data is written to a temp file, processed, then cleaned up.
+        """
+        import tempfile, os, base64 as _b64
+
+        path_to_use: Optional[str] = None
+        tmp_path: Optional[str] = None
+
+        if screenshot_path and Path(screenshot_path).exists():
+            path_to_use = screenshot_path
+        elif screenshot_base64:
+            try:
+                raw = screenshot_base64
+                if raw.startswith("data:"):
+                    raw = raw.split(",", 1)[1]
+                img_bytes = _b64.b64decode(raw)
+                fd, tmp_path = tempfile.mkstemp(suffix=".png")
+                os.write(fd, img_bytes)
+                os.close(fd)
+                path_to_use = tmp_path
+            except Exception as exc:
+                logger.warning("logo_detection.base64_decode_failed", error=str(exc))
+
+        if not path_to_use:
             return LogoDetectionResult(
                 model_used=self._model_name,
                 signals=["No screenshot available for logo detection"],
             )
-        return self.detect(screenshot_path)
+
+        try:
+            return self.detect(path_to_use)
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                os.unlink(tmp_path)

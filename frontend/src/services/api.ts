@@ -61,6 +61,7 @@ export interface CrawlDetails {
   cookies_count: number
   screenshot_path: string | null
   screenshot_url: string | null
+  screenshot_base64: string | null
   errors: string[]
 }
 
@@ -109,8 +110,18 @@ export interface AIClassifierResult {
   urgency_manipulation: number
   fear_tactics: number
   payment_demand: number
+  data_collection: number
   deception_confidence: number
   reasoning: string
+}
+
+export interface URLPerspective {
+  purpose: string
+  target_audience: string
+  content_category: string
+  technology_stack: string[]
+  privacy_concerns: string[]
+  overall_assessment: string
 }
 
 export interface AIAnalysisSummary {
@@ -124,6 +135,7 @@ export interface AIAnalysisSummary {
   risk_score: number
   explanation: string
   classifier: AIClassifierResult | null
+  url_perspective: URLPerspective | null
   available: boolean
 }
 
@@ -174,6 +186,42 @@ export interface RuleSignal {
   score_impact: number
 }
 
+export interface PaymentDetection {
+  has_payment_form: boolean
+  payment_gateways_detected: string[]
+  payment_form_fields: string[]
+  crypto_addresses: { type: string; address: string }[]
+  suspicious_payment_patterns: string[]
+  legitimate_payment_indicators: string[]
+  payment_security_score: number
+  risk_level: string
+  signals: string[]
+}
+
+export interface TrackerInfo {
+  name: string
+  category: string
+  url: string
+  severity: string
+  description: string
+}
+
+export interface TrackerDetection {
+  total_trackers: number
+  trackers: TrackerInfo[]
+  categories: Record<string, number>
+  analytics_trackers: string[]
+  advertising_trackers: string[]
+  fingerprinting_scripts: string[]
+  malware_scripts: string[]
+  mining_scripts: string[]
+  suspicious_scripts: string[]
+  known_spyware: string[]
+  privacy_score: number
+  risk_level: string
+  signals: string[]
+}
+
 export interface DeepDiveData {
   crawl: CrawlDetails | null
   domain_intel: DomainIntelSummary | null
@@ -184,6 +232,8 @@ export interface DeepDiveData {
   zeroday_suspicion: ZeroDaySuspicion | null
   threat_intel: ThreatIntelResult | null
   community_consensus: { url_or_domain: string; total_reports: number; phishing_reports: number; safe_reports: number; scam_reports: number; crowd_risk_score: number; consensus_confidence: number; last_report_at: string | null } | null
+  payment_detection: PaymentDetection | null
+  tracker_detection: TrackerDetection | null
   behavioral_signals: BehavioralSignal[]
   rule_signals: RuleSignal[]
 }

@@ -17,6 +17,8 @@ import {
   Users,
   Gauge,
   Bug,
+  CreditCard,
+  Radar,
 } from 'lucide-react'
 import { useState } from 'react'
 import type { PipelineStep } from '../services/api'
@@ -34,6 +36,8 @@ const STEP_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
   community: Users,
   zeroday: Bug,
   scoring: Gauge,
+  payment: CreditCard,
+  tracker: Radar,
 }
 
 const STATUS_COLORS: Record<string, string> = {

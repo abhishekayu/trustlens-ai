@@ -6,10 +6,8 @@ from __future__ import annotations
 
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import FileResponse
 
 from trustlens.core import get_settings
 from trustlens.core.logging import get_logger
@@ -143,36 +141,6 @@ async def get_analysis(
     )
 
 
-# ── Screenshot serving ───────────────────────────────────────────────────────
-
-
-@router.get(
-    "/analysis/{analysis_id}/screenshot",
-    summary="Get the crawl screenshot for an analysis",
-)
-async def get_screenshot(
-    analysis_id: str,
-    repo: AnalysisRepository = Depends(get_analysis_repo),
-):
-    """Return the screenshot image captured during crawl."""
-    analysis = await repo.get_by_id(analysis_id)
-    if analysis is None:
-        raise HTTPException(status_code=404, detail="Analysis not found")
-
-    screenshot_path = None
-    if analysis.crawl_result and analysis.crawl_result.screenshot_path:
-        screenshot_path = analysis.crawl_result.screenshot_path
-
-    if not screenshot_path or not Path(screenshot_path).exists():
-        raise HTTPException(status_code=404, detail="Screenshot not available")
-
-    return FileResponse(
-        screenshot_path,
-        media_type="image/png",
-        filename=f"screenshot-{analysis_id}.png",
-    )
-
-
 # ── Batch submit ─────────────────────────────────────────────────────────────
 
 
@@ -274,6 +242,8 @@ def _build_pipeline_steps(analysis: URLAnalysis) -> list[PipelineStep]:
         ("screenshot", "Screenshot Similarity", analysis.screenshot_similarity),
         ("threat_intel", "Threat Intel Feed Lookup", analysis.threat_intel),
         ("community", "Community Consensus", analysis.community_consensus),
+        ("payment", "Payment Detection", analysis.payment_detection),
+        ("tracker", "Tracker & Malware Detection", analysis.tracker_detection),
     ]
 
     for name, label, result in component_defs:
@@ -382,6 +352,32 @@ def _summarise_component(name: str, result) -> str:
             if hasattr(result, 'total_reports'):
                 return f"{result.total_reports} community reports (risk: {result.crowd_risk_score:.0f}/100)"
             return "No community data"
+        elif name == "payment":
+            if hasattr(result, 'has_payment_form'):
+                parts = []
+                if result.has_payment_form:
+                    parts.append("Payment form detected")
+                if result.payment_gateways_detected:
+                    parts.append(f"Gateways: {', '.join(result.payment_gateways_detected[:3])}")
+                if result.crypto_addresses:
+                    parts.append(f"{len(result.crypto_addresses)} crypto addresses")
+                if result.suspicious_payment_patterns:
+                    parts.append(f"{len(result.suspicious_payment_patterns)} suspicious patterns")
+                return " · ".join(parts) if parts else "No payment activity detected"
+            return "Checked"
+        elif name == "tracker":
+            if hasattr(result, 'total_trackers'):
+                if result.total_trackers == 0:
+                    return "No trackers detected"
+                parts = [f"{result.total_trackers} trackers"]
+                if result.malware_scripts:
+                    parts.append(f"MALWARE: {len(result.malware_scripts)}")
+                if result.mining_scripts:
+                    parts.append(f"MINERS: {len(result.mining_scripts)}")
+                if result.fingerprinting_scripts:
+                    parts.append(f"Fingerprinting: {len(result.fingerprinting_scripts)}")
+                return " · ".join(parts)
+            return "Checked"
     except Exception:
         pass
     return "Completed"
@@ -395,10 +391,6 @@ def _build_deep_dive(analysis: URLAnalysis) -> DeepDiveData:
     crawl = None
     if analysis.crawl_result is not None:
         cr = analysis.crawl_result
-        # Build screenshot URL if screenshot exists
-        screenshot_url = None
-        if cr.screenshot_path and Path(cr.screenshot_path).exists():
-            screenshot_url = f"/api/v1/analysis/{analysis.id}/screenshot"
 
         crawl = CrawlDetails(
             final_url=cr.final_url,
@@ -415,8 +407,9 @@ def _build_deep_dive(analysis: URLAnalysis) -> DeepDiveData:
             scripts_count=len(cr.scripts),
             meta_tags=cr.meta_tags,
             cookies_count=len(cr.cookies),
-            screenshot_path=cr.screenshot_path,
-            screenshot_url=screenshot_url,
+            screenshot_path=None,
+            screenshot_url=None,
+            screenshot_base64=cr.screenshot_base64,
             errors=cr.errors,
         )
 
@@ -490,6 +483,7 @@ def _build_deep_dive(analysis: URLAnalysis) -> DeepDiveData:
             risk_score=ar.risk_score,
             explanation=ar.explanation,
             classifier=ar.classifier,
+            url_perspective=ar.url_perspective,
             available=True,
         )
 
@@ -503,6 +497,8 @@ def _build_deep_dive(analysis: URLAnalysis) -> DeepDiveData:
         zeroday_suspicion=analysis.zeroday_suspicion,
         threat_intel=analysis.threat_intel,
         community_consensus=analysis.community_consensus,
+        payment_detection=analysis.payment_detection,
+        tracker_detection=analysis.tracker_detection,
         behavioral_signals=analysis.behavioral_signals or [],
         rule_signals=analysis.rule_signals or [],
     )

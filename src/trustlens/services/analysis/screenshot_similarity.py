@@ -169,16 +169,46 @@ class ScreenshotSimilarityEngine:
 
         return result
 
-    async def analyze(self, screenshot_path: Optional[str]) -> ScreenshotSimilarityResult:
+    async def analyze(
+        self,
+        screenshot_path: Optional[str] = None,
+        screenshot_base64: Optional[str] = None,
+    ) -> ScreenshotSimilarityResult:
         """
         Async wrapper for the orchestrator pipeline.
 
-        Args:
-            screenshot_path: Path to the captured screenshot (from crawler).
+        Accepts a file path OR a base64 data-URL.  When only base64 is
+        provided the data is written to a temp file, processed, then cleaned up.
         """
-        if not screenshot_path or not Path(screenshot_path).exists():
+        import tempfile, os, base64 as _b64
+
+        # Resolve an on-disk path to use
+        path_to_use: Optional[str] = None
+        tmp_path: Optional[str] = None
+
+        if screenshot_path and Path(screenshot_path).exists():
+            path_to_use = screenshot_path
+        elif screenshot_base64:
+            try:
+                # Strip data-URL prefix
+                raw = screenshot_base64
+                if raw.startswith("data:"):
+                    raw = raw.split(",", 1)[1]
+                img_bytes = _b64.b64decode(raw)
+                fd, tmp_path = tempfile.mkstemp(suffix=".png")
+                os.write(fd, img_bytes)
+                os.close(fd)
+                path_to_use = tmp_path
+            except Exception as exc:
+                logger.warning("screenshot_similarity.base64_decode_failed", error=str(exc))
+
+        if not path_to_use:
             return ScreenshotSimilarityResult(
                 signals=["No screenshot available for visual similarity analysis"]
             )
 
-        return self.compare(screenshot_path)
+        try:
+            return self.compare(path_to_use)
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                os.unlink(tmp_path)

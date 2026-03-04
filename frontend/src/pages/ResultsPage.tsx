@@ -1,9 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ExternalLink, Clock, AlertCircle } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Clock, AlertCircle, Brain, Shield, Eye } from 'lucide-react'
 import { useAnalysisPolling } from '../hooks/useAnalysisPolling'
 import ScoreGauge from '../components/ScoreGauge'
 import SignalCard from '../components/SignalCard'
-import EvidenceTimeline from '../components/EvidenceTimeline'
 import PipelineSteps from '../components/PipelineSteps'
 import DeepDive from '../components/DeepDive'
 
@@ -150,8 +149,36 @@ export default function ResultsPage() {
       {/* AI explanation */}
       {ts?.ai_explanation && (
         <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-6 mb-8">
-          <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3">AI Explanation</h3>
-          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{ts.ai_explanation}</p>
+          <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <Brain className="w-4 h-4 text-sky-400" />
+            AI Threat Assessment
+          </h3>
+          <div className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{ts.ai_explanation}</div>
+
+          {/* URL Perspective summary */}
+          {result.deep_dive?.ai_analysis?.url_perspective && (
+            <div className="mt-4 pt-4 border-t border-gray-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                {result.deep_dive.ai_analysis.url_perspective.purpose && (
+                  <div className="bg-gray-900/60 rounded-lg p-3 border border-gray-800">
+                    <p className="text-gray-500 mb-1 flex items-center gap-1"><Eye className="w-3 h-3" /> Purpose</p>
+                    <p className="text-gray-300">{result.deep_dive.ai_analysis.url_perspective.purpose}</p>
+                  </div>
+                )}
+                {result.deep_dive.ai_analysis.url_perspective.content_category && (
+                  <div className="bg-gray-900/60 rounded-lg p-3 border border-gray-800">
+                    <p className="text-gray-500 mb-1 flex items-center gap-1"><Shield className="w-3 h-3" /> Category</p>
+                    <p className="text-gray-300">{result.deep_dive.ai_analysis.url_perspective.content_category}</p>
+                  </div>
+                )}
+              </div>
+              {result.deep_dive.ai_analysis.url_perspective.overall_assessment && (
+                <p className="mt-3 text-xs text-gray-400 bg-gray-800/40 rounded-lg p-3 border border-gray-700/50">
+                  {result.deep_dive.ai_analysis.url_perspective.overall_assessment}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -165,14 +192,7 @@ export default function ResultsPage() {
       {/* Deep Dive — full transparency panel */}
       {result.deep_dive && (
         <div className="mb-8">
-          <DeepDive data={result.deep_dive} analysisId={result.analysis_id} />
-        </div>
-      )}
-
-      {/* Explanation */}
-      {ts?.explanation && (
-        <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-6 mb-8">
-          <EvidenceTimeline signals={ts.explanation} />
+          <DeepDive data={result.deep_dive} evidenceSignals={ts?.explanation ?? null} />
         </div>
       )}
 

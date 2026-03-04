@@ -194,10 +194,16 @@ class CrawlerService:
                     # record it — the security header analyzer will also catch this
                     ssl_info["cert_error_ignored"] = True
 
-                # Screenshot
+                # Screenshot — capture in-memory as base64 (no disk storage)
                 screenshot_path: Optional[str] = None
-                if self._settings.screenshot_enabled:
-                    screenshot_path = await self._take_screenshot(page, url)
+                screenshot_base64: Optional[str] = None
+                try:
+                    raw_bytes = await page.screenshot(full_page=False)
+                    import base64 as _b64
+                    screenshot_base64 = "data:image/png;base64," + _b64.b64encode(raw_bytes).decode()
+                    logger.info("crawler.screenshot_captured_base64", size_bytes=len(raw_bytes))
+                except Exception as _ss_err:
+                    logger.warning("crawler.screenshot_failed", error=str(_ss_err))
 
                 load_time_ms = int((time.monotonic() - start_time) * 1000)
 
@@ -213,6 +219,7 @@ class CrawlerService:
                     scripts=scripts,
                     ssl_info=ssl_info,
                     screenshot_path=screenshot_path,
+                    screenshot_base64=screenshot_base64,
                     headers=resp_headers,
                     cookies=cookies,
                     load_time_ms=load_time_ms,

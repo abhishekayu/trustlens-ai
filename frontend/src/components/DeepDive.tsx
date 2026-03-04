@@ -14,20 +14,25 @@ import {
   FileText,
   Bug,
   Users,
-  Camera,
   ChevronDown,
   ChevronRight,
   Eye,
   Search,
   Info,
+  CreditCard,
+  Radar,
+  Wallet,
+  Camera,
   Image,
 } from 'lucide-react'
 import { useState } from 'react'
 import type { DeepDiveData } from '../services/api'
+import EvidenceTimeline from './EvidenceTimeline'
 
 interface Props {
   data: DeepDiveData
   analysisId?: string
+  evidenceSignals?: string | null
 }
 
 /* ─── Small helpers ───────────────────────────────────────────────────────── */
@@ -113,7 +118,7 @@ function EmptyState({ message }: { message: string }) {
 
 /* ─── Main Component ──────────────────────────────────────────────────────── */
 
-export default function DeepDive({ data, analysisId }: Props) {
+export default function DeepDive({ data, evidenceSignals }: Props) {
   const [screenshotOpen, setScreenshotOpen] = useState(false)
 
   return (
@@ -123,19 +128,26 @@ export default function DeepDive({ data, analysisId }: Props) {
         Full Transparency — Deep Dive
       </h3>
 
-      {/* ── Page Screenshot ───────────────────────────────────── */}
-      {data.crawl?.screenshot_url && (
-        <Section title="Page Screenshot (Captured During Crawl)" icon={Camera} defaultOpen={true}>
+      {/* ── Evidence Timeline ─────────────────────────────────── */}
+      {evidenceSignals && (
+        <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-4">
+          <EvidenceTimeline signals={evidenceSignals} />
+        </div>
+      )}
+
+      {/* ── Page Screenshot (in-memory, not stored) ───────────── */}
+      {data.crawl?.screenshot_base64 && (
+        <Section title="Page Screenshot (Live Capture — Not Stored)" icon={Camera} defaultOpen={true}>
           <div className="space-y-2">
             <p className="text-[11px] text-gray-500">
-              This screenshot was captured by TrustLens's sandboxed Chromium browser during analysis.
+              Captured in-memory by TrustLens's sandboxed Chromium browser. This image is never saved to disk.
             </p>
             <div
               className="relative rounded-lg overflow-hidden border border-gray-700 cursor-pointer group"
               onClick={() => setScreenshotOpen(!screenshotOpen)}
             >
               <img
-                src={data.crawl.screenshot_url}
+                src={data.crawl.screenshot_base64}
                 alt="Page screenshot captured during crawl"
                 className={`w-full transition-all duration-300 ${screenshotOpen ? 'max-h-[800px]' : 'max-h-48'} object-cover object-top`}
               />
@@ -159,7 +171,206 @@ export default function DeepDive({ data, analysisId }: Props) {
         </Section>
       )}
 
-      {/* ── Crawl ─────────────────────────────────────────────── */}
+      {/* ── AI Deception Classifier ─────────────────────────── */}
+      <Section
+        title="AI Deception Classifier"
+        icon={Brain}
+        statusBadge={
+          data.ai_analysis?.available
+            ? <Badge variant="good">Active</Badge>
+            : <Badge variant="warn">Unavailable</Badge>
+        }
+      >
+        {data.ai_analysis ? (
+          <>
+            <div className="flex items-center gap-3 mb-3">
+              <Badge variant={data.ai_analysis.available ? 'good' : 'warn'}>
+                {data.ai_analysis.available ? 'Active' : 'Unavailable'}
+              </Badge>
+              <span className="text-xs text-gray-400">
+                Provider: <span className="text-gray-200 font-semibold">{data.ai_analysis.provider.toUpperCase()}</span>
+              </span>
+              <span className="text-xs text-gray-400">
+                Model: <span className="text-sky-400 font-mono">{data.ai_analysis.model}</span>
+              </span>
+            </div>
+
+            {data.ai_analysis.available ? (
+              <>
+                <Row label="Intent" value={
+                  <Badge variant={data.ai_analysis.intent === 'legitimate' ? 'good' : data.ai_analysis.intent === 'unknown' ? 'neutral' : 'bad'}>
+                    {data.ai_analysis.intent}
+                  </Badge>
+                } />
+                <Row label="Confidence" value={`${(data.ai_analysis.intent_confidence * 100).toFixed(0)}%`} />
+                <ScoreMeter score={100 - data.ai_analysis.risk_score} label="Trust Score" />
+
+                {data.ai_analysis.deception_indicators.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-gray-500 mb-1">Deception Indicators:</p>
+                    {data.ai_analysis.deception_indicators.map((d, i) => (
+                      <div key={i} className="text-xs text-red-400 flex items-start gap-1.5">
+                        <XCircle className="w-3 h-3 mt-0.5 shrink-0" /> {d}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {data.ai_analysis.legitimacy_indicators.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-gray-500 mb-1">Legitimacy Indicators:</p>
+                    {data.ai_analysis.legitimacy_indicators.map((l, i) => (
+                      <div key={i} className="text-xs text-emerald-400 flex items-start gap-1.5">
+                        <CheckCircle2 className="w-3 h-3 mt-0.5 shrink-0" /> {l}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {data.ai_analysis.social_engineering_tactics.length > 0 && (
+                  <div className="mt-2">
+                    <p className="text-[11px] text-gray-500 mb-1">Social Engineering Tactics:</p>
+                    {data.ai_analysis.social_engineering_tactics.map((t, i) => (
+                      <div key={i} className="text-xs text-amber-400 flex items-start gap-1.5">
+                        <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" /> {t}
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {data.ai_analysis.classifier && (
+                  <div className="mt-3 pt-3 border-t border-gray-800">
+                    <p className="text-xs font-semibold text-gray-400 mb-2">Classifier Breakdown</p>
+                    <div className="space-y-1">
+                      <ScoreMeter score={data.ai_analysis.classifier.impersonation * 100} label="Impersonation" />
+                      <ScoreMeter score={data.ai_analysis.classifier.credential_harvesting * 100} label="Cred Harvest" />
+                      <ScoreMeter score={data.ai_analysis.classifier.urgency_manipulation * 100} label="Urgency" />
+                      <ScoreMeter score={data.ai_analysis.classifier.fear_tactics * 100} label="Fear" />
+                      <ScoreMeter score={data.ai_analysis.classifier.payment_demand * 100} label="Payment" />
+                      <ScoreMeter score={(data.ai_analysis.classifier.data_collection ?? 0) * 100} label="Data Collect" />
+                      <ScoreMeter score={data.ai_analysis.classifier.deception_confidence * 100} label="Deception" />
+                    </div>
+                  </div>
+                )}
+
+                {/* URL Perspective */}
+                {data.ai_analysis.url_perspective && (
+                  <div className="mt-3 pt-3 border-t border-gray-800">
+                    <p className="text-xs font-semibold text-gray-400 mb-2 flex items-center gap-1.5">
+                      <Globe className="w-3.5 h-3.5 text-sky-400" />
+                      AI URL Perspective
+                    </p>
+                    <div className="space-y-2">
+                      {data.ai_analysis.url_perspective.purpose && (
+                        <Row label="Purpose" value={data.ai_analysis.url_perspective.purpose} />
+                      )}
+                      {data.ai_analysis.url_perspective.target_audience && (
+                        <Row label="Target Audience" value={data.ai_analysis.url_perspective.target_audience} />
+                      )}
+                      {data.ai_analysis.url_perspective.content_category && (
+                        <Row label="Content Category" value={
+                          <Badge variant="neutral">{data.ai_analysis.url_perspective.content_category}</Badge>
+                        } />
+                      )}
+                      {data.ai_analysis.url_perspective.technology_stack && data.ai_analysis.url_perspective.technology_stack.length > 0 && (
+                        <Row label="Tech Stack" value={
+                          <div className="flex flex-wrap gap-1">
+                            {data.ai_analysis.url_perspective.technology_stack.map((t: string, i: number) => (
+                              <Badge key={i} variant="neutral">{t}</Badge>
+                            ))}
+                          </div>
+                        } />
+                      )}
+                      {data.ai_analysis.url_perspective.privacy_concerns && data.ai_analysis.url_perspective.privacy_concerns.length > 0 && (
+                        <div className="mt-1">
+                          <p className="text-[11px] text-gray-500 mb-1">Privacy Concerns:</p>
+                          {data.ai_analysis.url_perspective.privacy_concerns.map((c: string, i: number) => (
+                            <div key={i} className="text-xs text-amber-400 flex items-start gap-1.5">
+                              <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" /> {c}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {data.ai_analysis.url_perspective.overall_assessment && (
+                        <div className="mt-2 text-xs text-gray-400 bg-gray-900/60 rounded-lg p-2 border border-gray-800">
+                          {data.ai_analysis.url_perspective.overall_assessment}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {data.ai_analysis.explanation && (
+                  <div className="mt-3 text-xs text-gray-400 whitespace-pre-line bg-gray-900/60 rounded-lg p-3 border border-gray-800">
+                    <p className="text-[11px] text-gray-500 mb-1 font-semibold">AI Explanation:</p>
+                    {data.ai_analysis.explanation}
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-xs text-gray-500 bg-gray-900/40 rounded-lg p-3 border border-gray-800">
+                AI classifier was unavailable for this analysis — trust score relies on rule-based heuristics only (70% weight).
+                <br /><br />
+                To enable AI analysis, ensure <span className="text-sky-400 font-semibold">{data.ai_analysis.provider}</span> (<span className="font-mono text-sky-400">{data.ai_analysis.model}</span>) is running and accessible.
+              </div>
+            )}
+          </>
+        ) : (
+          <EmptyState message="AI analysis configuration not available" />
+        )}
+      </Section>
+
+      {/* ── Brand Impersonation ───────────────────────────────── */}
+      <Section
+        title="Brand Impersonation Analysis"
+        icon={Fingerprint}
+        statusBadge={
+          data.brand_matches.length > 0
+            ? data.brand_matches.some(bm => bm.impersonation_probability >= 0.6)
+              ? <Badge variant="bad">Impersonation Detected</Badge>
+              : data.brand_matches.some(bm => bm.is_official)
+                ? <Badge variant="good">Official</Badge>
+                : <Badge variant="good">Checked</Badge>
+            : <Badge variant="neutral">No Matches</Badge>
+        }
+      >
+        {data.brand_matches.length > 0 ? (
+          data.brand_matches.map((bm, i) => (
+            <div key={i} className={`p-3 rounded-lg border ${bm.is_official ? 'border-emerald-500/30 bg-emerald-500/5' : bm.impersonation_probability >= 0.6 ? 'border-red-500/30 bg-red-500/5' : 'border-gray-800 bg-gray-900/40'}`}>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-gray-200">{bm.brand_name}</span>
+                {bm.is_official ? (
+                  <Badge variant="good">Official Domain</Badge>
+                ) : bm.impersonation_probability >= 0.6 ? (
+                  <Badge variant="bad">Likely Impersonation</Badge>
+                ) : bm.domain_similarity >= 0.5 ? (
+                  <Badge variant="warn">Suspicious</Badge>
+                ) : (
+                  <Badge variant="neutral">Low Risk</Badge>
+                )}
+              </div>
+              {!bm.is_official && (
+                <div className="space-y-1">
+                  <ScoreMeter score={bm.domain_similarity * 100} label="Domain Sim" />
+                  <ScoreMeter score={bm.content_similarity * 100} label="Content Sim" />
+                  <ScoreMeter score={bm.impersonation_probability * 100} label="Impersonation" />
+                  {bm.matched_features.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {bm.matched_features.map((f, j) => (
+                        <Badge key={j} variant="warn">{f}</Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          ))
+        ) : (
+          <EmptyState message="No brand matches detected — page does not resemble any monitored brands" />
+        )}
+      </Section>
+
+      {/* ── Browser Crawl & Page Info ─────────────────────────── */}
       <Section
         title="Browser Crawl & Page Info"
         icon={Globe}
@@ -302,56 +513,6 @@ export default function DeepDive({ data, analysisId }: Props) {
         )}
       </Section>
 
-      {/* ── Brand Impersonation ───────────────────────────────── */}
-      <Section
-        title="Brand Impersonation Analysis"
-        icon={Fingerprint}
-        statusBadge={
-          data.brand_matches.length > 0
-            ? data.brand_matches.some(bm => bm.impersonation_probability >= 0.6)
-              ? <Badge variant="bad">Impersonation Detected</Badge>
-              : data.brand_matches.some(bm => bm.is_official)
-                ? <Badge variant="good">Official</Badge>
-                : <Badge variant="good">Checked</Badge>
-            : <Badge variant="neutral">No Matches</Badge>
-        }
-      >
-        {data.brand_matches.length > 0 ? (
-          data.brand_matches.map((bm, i) => (
-            <div key={i} className={`p-3 rounded-lg border ${bm.is_official ? 'border-emerald-500/30 bg-emerald-500/5' : bm.impersonation_probability >= 0.6 ? 'border-red-500/30 bg-red-500/5' : 'border-gray-800 bg-gray-900/40'}`}>
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-semibold text-gray-200">{bm.brand_name}</span>
-                {bm.is_official ? (
-                  <Badge variant="good">Official Domain</Badge>
-                ) : bm.impersonation_probability >= 0.6 ? (
-                  <Badge variant="bad">Likely Impersonation</Badge>
-                ) : bm.domain_similarity >= 0.5 ? (
-                  <Badge variant="warn">Suspicious</Badge>
-                ) : (
-                  <Badge variant="neutral">Low Risk</Badge>
-                )}
-              </div>
-              {!bm.is_official && (
-                <div className="space-y-1">
-                  <ScoreMeter score={bm.domain_similarity * 100} label="Domain Sim" />
-                  <ScoreMeter score={bm.content_similarity * 100} label="Content Sim" />
-                  <ScoreMeter score={bm.impersonation_probability * 100} label="Impersonation" />
-                  {bm.matched_features.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-2">
-                      {bm.matched_features.map((f, j) => (
-                        <Badge key={j} variant="warn">{f}</Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          ))
-        ) : (
-          <EmptyState message="No brand matches detected — page does not resemble any monitored brands" />
-        )}
-      </Section>
-
       {/* ── Security Headers ──────────────────────────────────── */}
       <Section
         title="Security Headers"
@@ -387,103 +548,219 @@ export default function DeepDive({ data, analysisId }: Props) {
         )}
       </Section>
 
-      {/* ── AI Analysis ───────────────────────────────────────── */}
+      {/* ── Payment Detection ─────────────────────────────────── */}
       <Section
-        title="AI Deception Classifier"
-        icon={Brain}
+        title="Payment Detection"
+        icon={CreditCard}
+        defaultOpen={data.payment_detection?.has_payment_form ?? false}
         statusBadge={
-          data.ai_analysis?.available
-            ? <Badge variant="good">Active</Badge>
-            : <Badge variant="warn">Unavailable</Badge>
+          data.payment_detection
+            ? data.payment_detection.has_payment_form
+              ? <Badge variant={data.payment_detection.risk_level === 'high' || data.payment_detection.risk_level === 'critical' ? 'bad' : data.payment_detection.risk_level === 'medium' ? 'warn' : 'good'}>
+                  {data.payment_detection.risk_level.toUpperCase()}
+                </Badge>
+              : <Badge variant="good">No Payment Forms</Badge>
+            : <Badge variant="neutral">N/A</Badge>
         }
       >
-        {data.ai_analysis ? (
+        {data.payment_detection ? (
           <>
-            <div className="flex items-center gap-3 mb-3">
-              <Badge variant={data.ai_analysis.available ? 'good' : 'warn'}>
-                {data.ai_analysis.available ? 'Active' : 'Unavailable'}
+            <Row label="Payment Form" value={
+              <Badge variant={data.payment_detection.has_payment_form ? 'warn' : 'good'}>
+                {data.payment_detection.has_payment_form ? 'Detected' : 'None'}
               </Badge>
-              <span className="text-xs text-gray-400">
-                Provider: <span className="text-gray-200 font-semibold">{data.ai_analysis.provider.toUpperCase()}</span>
-              </span>
-              <span className="text-xs text-gray-400">
-                Model: <span className="text-sky-400 font-mono">{data.ai_analysis.model}</span>
-              </span>
-            </div>
+            } />
+            <ScoreMeter score={data.payment_detection.payment_security_score} label="Security" />
+            <Row label="Risk Level" value={
+              <Badge variant={data.payment_detection.risk_level === 'high' || data.payment_detection.risk_level === 'critical' ? 'bad' : data.payment_detection.risk_level === 'medium' ? 'warn' : 'good'}>
+                {data.payment_detection.risk_level}
+              </Badge>
+            } />
 
-            {data.ai_analysis.available ? (
-              <>
-                <Row label="Intent" value={
-                  <Badge variant={data.ai_analysis.intent === 'legitimate' ? 'good' : data.ai_analysis.intent === 'unknown' ? 'neutral' : 'bad'}>
-                    {data.ai_analysis.intent}
-                  </Badge>
-                } />
-                <Row label="Confidence" value={`${(data.ai_analysis.intent_confidence * 100).toFixed(0)}%`} />
-                <ScoreMeter score={100 - data.ai_analysis.risk_score} label="Trust Score" />
+            {data.payment_detection.payment_gateways_detected.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Payment Gateways Detected:</p>
+                <div className="flex flex-wrap gap-1">
+                  {data.payment_detection.payment_gateways_detected.map((g: string, i: number) => (
+                    <Badge key={i} variant="neutral">{g}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
-                {data.ai_analysis.deception_indicators.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-[11px] text-gray-500 mb-1">Deception Indicators:</p>
-                    {data.ai_analysis.deception_indicators.map((d, i) => (
-                      <div key={i} className="text-xs text-red-400 flex items-start gap-1.5">
-                        <XCircle className="w-3 h-3 mt-0.5 shrink-0" /> {d}
-                      </div>
-                    ))}
+            {data.payment_detection.payment_form_fields.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Payment Form Fields:</p>
+                <div className="flex flex-wrap gap-1">
+                  {data.payment_detection.payment_form_fields.map((f: string, i: number) => (
+                    <Badge key={i} variant="warn">{f}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {data.payment_detection.crypto_addresses.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Cryptocurrency Addresses:</p>
+                {data.payment_detection.crypto_addresses.map((addr, i) => (
+                  <div key={i} className="text-xs text-red-400 flex items-start gap-1.5 font-mono">
+                    <Wallet className="w-3 h-3 mt-0.5 shrink-0" />
+                    <span className="text-amber-400">[{addr.type}]</span> {addr.address}
                   </div>
-                )}
+                ))}
+              </div>
+            )}
 
-                {data.ai_analysis.legitimacy_indicators.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-[11px] text-gray-500 mb-1">Legitimacy Indicators:</p>
-                    {data.ai_analysis.legitimacy_indicators.map((l, i) => (
-                      <div key={i} className="text-xs text-emerald-400 flex items-start gap-1.5">
-                        <CheckCircle2 className="w-3 h-3 mt-0.5 shrink-0" /> {l}
-                      </div>
-                    ))}
+            {data.payment_detection.suspicious_payment_patterns.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Suspicious Patterns:</p>
+                {data.payment_detection.suspicious_payment_patterns.map((p: string, i: number) => (
+                  <div key={i} className="text-xs text-red-400 flex items-start gap-1.5">
+                    <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" /> {p}
                   </div>
-                )}
+                ))}
+              </div>
+            )}
 
-                {data.ai_analysis.social_engineering_tactics.length > 0 && (
-                  <div className="mt-2">
-                    <p className="text-[11px] text-gray-500 mb-1">Social Engineering Tactics:</p>
-                    {data.ai_analysis.social_engineering_tactics.map((t, i) => (
-                      <div key={i} className="text-xs text-amber-400 flex items-start gap-1.5">
-                        <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" /> {t}
-                      </div>
-                    ))}
+            {data.payment_detection.legitimate_payment_indicators.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Legitimate Indicators:</p>
+                {data.payment_detection.legitimate_payment_indicators.map((l: string, i: number) => (
+                  <div key={i} className="text-xs text-emerald-400 flex items-start gap-1.5">
+                    <CheckCircle2 className="w-3 h-3 mt-0.5 shrink-0" /> {l}
                   </div>
-                )}
+                ))}
+              </div>
+            )}
 
-                {data.ai_analysis.classifier && (
-                  <div className="mt-3 pt-3 border-t border-gray-800">
-                    <p className="text-xs font-semibold text-gray-400 mb-2">Classifier Breakdown</p>
-                    <div className="space-y-1">
-                      <ScoreMeter score={data.ai_analysis.classifier.impersonation * 100} label="Impersonation" />
-                      <ScoreMeter score={data.ai_analysis.classifier.credential_harvesting * 100} label="Cred Harvest" />
-                      <ScoreMeter score={data.ai_analysis.classifier.urgency_manipulation * 100} label="Urgency" />
-                      <ScoreMeter score={data.ai_analysis.classifier.fear_tactics * 100} label="Fear" />
-                      <ScoreMeter score={data.ai_analysis.classifier.payment_demand * 100} label="Payment" />
-                      <ScoreMeter score={data.ai_analysis.classifier.deception_confidence * 100} label="Deception" />
-                    </div>
+            {data.payment_detection.signals && data.payment_detection.signals.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
+                {data.payment_detection.signals.map((s: string, i: number) => (
+                  <div key={i} className="text-xs text-gray-400 flex items-start gap-1.5">
+                    <Info className="w-3 h-3 mt-0.5 shrink-0 text-gray-500" /> {s}
                   </div>
-                )}
-
-                {data.ai_analysis.explanation && (
-                  <div className="mt-3 text-xs text-gray-400 whitespace-pre-line bg-gray-900/60 rounded-lg p-3 border border-gray-800">
-                    {data.ai_analysis.explanation}
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-xs text-gray-500 bg-gray-900/40 rounded-lg p-3 border border-gray-800">
-                AI classifier was unavailable for this analysis — trust score relies on rule-based heuristics only (70% weight).
-                <br /><br />
-                To enable AI analysis, ensure <span className="text-sky-400 font-semibold">{data.ai_analysis.provider}</span> (<span className="font-mono text-sky-400">{data.ai_analysis.model}</span>) is running and accessible.
+                ))}
               </div>
             )}
           </>
         ) : (
-          <EmptyState message="AI analysis configuration not available" />
+          <EmptyState message="Payment detection was not performed for this analysis" />
+        )}
+      </Section>
+
+      {/* ── Tracker & Malware Detection ───────────────────────── */}
+      <Section
+        title="Tracker & Malware Detection"
+        icon={Radar}
+        defaultOpen={(data.tracker_detection?.total_trackers ?? 0) > 0}
+        statusBadge={
+          data.tracker_detection
+            ? data.tracker_detection.total_trackers > 0
+              ? <Badge variant={data.tracker_detection.risk_level === 'high' || data.tracker_detection.risk_level === 'critical' ? 'bad' : data.tracker_detection.risk_level === 'medium' ? 'warn' : 'good'}>
+                  {data.tracker_detection.total_trackers} Found
+                </Badge>
+              : <Badge variant="good">Clean</Badge>
+            : <Badge variant="neutral">N/A</Badge>
+        }
+      >
+        {data.tracker_detection ? (
+          <>
+            <Row label="Total Trackers" value={data.tracker_detection.total_trackers.toString()} />
+            <ScoreMeter score={data.tracker_detection.privacy_score} label="Privacy" />
+            <Row label="Risk Level" value={
+              <Badge variant={data.tracker_detection.risk_level === 'high' || data.tracker_detection.risk_level === 'critical' ? 'bad' : data.tracker_detection.risk_level === 'medium' ? 'warn' : 'good'}>
+                {data.tracker_detection.risk_level}
+              </Badge>
+            } />
+
+            {/* Category Breakdown */}
+            <div className="mt-3 pt-3 border-t border-gray-800">
+              <p className="text-xs font-semibold text-gray-400 mb-2">Category Breakdown</p>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-500 w-20">Analytics</span>
+                  <Badge variant={(data.tracker_detection.analytics_trackers?.length ?? 0) > 0 ? 'warn' : 'good'}>
+                    {data.tracker_detection.analytics_trackers?.length ?? 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-500 w-20">Advertising</span>
+                  <Badge variant={(data.tracker_detection.advertising_trackers?.length ?? 0) > 0 ? 'warn' : 'good'}>
+                    {data.tracker_detection.advertising_trackers?.length ?? 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-500 w-20">Fingerprint</span>
+                  <Badge variant={(data.tracker_detection.fingerprinting_scripts?.length ?? 0) > 0 ? 'bad' : 'good'}>
+                    {data.tracker_detection.fingerprinting_scripts?.length ?? 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-500 w-20">Malware</span>
+                  <Badge variant={(data.tracker_detection.malware_scripts?.length ?? 0) > 0 ? 'bad' : 'good'}>
+                    {data.tracker_detection.malware_scripts?.length ?? 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-500 w-20">Mining</span>
+                  <Badge variant={(data.tracker_detection.mining_scripts?.length ?? 0) > 0 ? 'bad' : 'good'}>
+                    {data.tracker_detection.mining_scripts?.length ?? 0}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-xs">
+                  <span className="text-gray-500 w-20">Spyware</span>
+                  <Badge variant={(data.tracker_detection.known_spyware?.length ?? 0) > 0 ? 'bad' : 'good'}>
+                    {data.tracker_detection.known_spyware?.length ?? 0}
+                  </Badge>
+                </div>
+              </div>
+            </div>
+
+            {/* Suspicious Scripts */}
+            {(data.tracker_detection.suspicious_scripts?.length ?? 0) > 0 && (
+              <div className="mt-2">
+                <Row label="Suspicious Scripts" value={
+                  <Badge variant="bad">{data.tracker_detection.suspicious_scripts?.length ?? 0}</Badge>
+                } />
+              </div>
+            )}
+
+            {/* Detailed Tracker List */}
+            {data.tracker_detection.trackers && data.tracker_detection.trackers.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800">
+                <p className="text-xs font-semibold text-gray-400 mb-2">Detected Trackers</p>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {data.tracker_detection.trackers.map((t, i) => (
+                    <div key={i} className="p-2 rounded-lg bg-gray-900/60 border border-gray-800">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs font-semibold text-gray-300">{t.name}</span>
+                        <div className="flex items-center gap-1">
+                          <Badge variant="neutral">{t.category}</Badge>
+                          <Badge variant={t.severity === 'high' || t.severity === 'critical' ? 'bad' : t.severity === 'medium' ? 'warn' : 'neutral'}>
+                            {t.severity}
+                          </Badge>
+                        </div>
+                      </div>
+                      {t.description && <p className="text-[11px] text-gray-400">{t.description}</p>}
+                      {t.url && <p className="text-[11px] text-gray-500 font-mono truncate mt-0.5">{t.url}</p>}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {data.tracker_detection.signals && data.tracker_detection.signals.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
+                {data.tracker_detection.signals.map((s: string, i: number) => (
+                  <div key={i} className="text-xs text-gray-400 flex items-start gap-1.5">
+                    <Info className="w-3 h-3 mt-0.5 shrink-0 text-gray-500" /> {s}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <EmptyState message="Tracker and malware detection was not performed for this analysis" />
         )}
       </Section>
 
@@ -535,17 +812,6 @@ export default function DeepDive({ data, analysisId }: Props) {
               </div>
             )}
 
-            {/* Show the screenshot if available */}
-            {data.crawl?.screenshot_url && (
-              <div className="mt-3 pt-3 border-t border-gray-800">
-                <p className="text-xs font-semibold text-gray-400 mb-2">Captured Screenshot</p>
-                <img
-                  src={data.crawl.screenshot_url}
-                  alt="Analyzed screenshot"
-                  className="w-full max-h-40 object-cover object-top rounded-lg border border-gray-700"
-                />
-              </div>
-            )}
           </>
         ) : (
           <div className="space-y-2">
@@ -553,16 +819,6 @@ export default function DeepDive({ data, analysisId }: Props) {
             <div className="text-[11px] text-gray-600 bg-gray-900/40 rounded-lg p-2 font-mono border border-gray-800">
               pip install Pillow imagehash
             </div>
-            {data.crawl?.screenshot_url && (
-              <div className="mt-2">
-                <p className="text-xs text-gray-500 mb-1">The crawl screenshot was still captured:</p>
-                <img
-                  src={data.crawl.screenshot_url}
-                  alt="Captured screenshot"
-                  className="w-full max-h-40 object-cover object-top rounded-lg border border-gray-700"
-                />
-              </div>
-            )}
           </div>
         )}
       </Section>
