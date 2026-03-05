@@ -4,6 +4,10 @@
   <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
   <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/Tailwind_CSS-4.2-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+
+  <img src="https://img.shields.io/badge/LLM-Powered-purple?style=for-the-badge" alt="LLM Powered" />
+  <img src="https://img.shields.io/badge/Generative_AI-Enabled-orange?style=for-the-badge" alt="Generative AI" />
+
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
