@@ -1,174 +1,123 @@
 <p align="center">
-  <img src="docs/assets/trustlens-banner.png" alt="TrustLens AI" width="720" />
+  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
+  <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4.2-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
 </p>
 
-<h1 align="center">TrustLens AI</h1>
-
+<h1 align="center">🔍 TrustLens AI</h1>
+<p align="center"><strong>Explainable AI-Powered URL Trust Intelligence Engine</strong></p>
 <p align="center">
-  <strong>Explainable AI-Powered URL Trust Intelligence Engine</strong><br/>
-  <em>Every risk score comes with evidence you can verify.</em>
-</p>
-
-<p align="center">
-  <a href="https://python.org"><img src="https://img.shields.io/badge/python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11+"></a>
-  <a href="https://fastapi.tiangolo.com"><img src="https://img.shields.io/badge/FastAPI-0.115+-009688?logo=fastapi&logoColor=white" alt="FastAPI"></a>
-  <a href="https://react.dev"><img src="https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black" alt="React"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License"></a>
-  <img src="https://img.shields.io/badge/status-active%20development-brightgreen" alt="Status">
-</p>
-
-<p align="center">
-  <a href="#-quick-start">Quick Start</a> &bull;
-  <a href="#-vision">Vision</a> &bull;
-  <a href="#-architecture">Architecture</a> &bull;
-  <a href="#-api-reference">API Docs</a> &bull;
-  <a href="#-react-dashboard">Dashboard</a> &bull;
-  <a href="#-roadmap">Roadmap</a> &bull;
-  <a href="CONTRIBUTING.md">Contributing</a>
+  <em>Drop any URL → get an instant, transparent trust score backed by 15+ analysis engines, AI deception classification, and full evidence breakdown.</em>
 </p>
 
 ---
 
-## Vision
+## Table of Contents
 
-The internet trust problem is getting worse. Phishing attacks increased 150% year-over-year. Existing URL checkers give you a binary **safe/unsafe** with zero explanation &mdash; a black box you're supposed to blindly trust.
-
-**TrustLens AI exists to fix this.**
-
-We believe security verdicts must be **transparent, explainable, and verifiable**. Every score TrustLens produces comes with a complete evidence trail &mdash; the signals that contributed, the weights applied, and the reasoning behind each decision. You don't have to trust our AI. You can verify every conclusion yourself.
-
-### Core Principles
-
-| Principle                        | Implementation                                                                      |
-| -------------------------------- | ----------------------------------------------------------------------------------- |
-| **AI advises, rules decide**     | AI is capped at 30% influence. Deterministic rules control 70%.                     |
-| **Evidence over authority**      | Every signal includes raw evidence a human can independently verify.                |
-| **Privacy by default**           | Self-hostable. Supports multiple AI providers. Your URLs stay under your control.   |
-| **Zero hallucination tolerance** | Multi-layer anti-hallucination pipeline prevents AI from fabricating evidence.      |
-| **Open by design**               | MIT licensed. Every algorithm, every weight, every threshold &mdash; all auditable. |
+- [What is TrustLens?](#what-is-trustlens)
+- [Features](#features)
+- [Architecture](#architecture)
+- [Quick Start](#quick-start)
+- [Setup Wizard — LLM Provider](#setup-wizard--llm-provider)
+- [Manual Setup](#manual-setup)
+- [Docker](#docker)
+- [Configuration](#configuration)
+- [API Endpoints](#api-endpoints)
+- [Analysis Engines](#analysis-engines)
+- [Scoring Methodology](#scoring-methodology)
+- [Project Structure](#project-structure)
+- [Tech Stack](#tech-stack)
+- [Contributing](#contributing)
+- [License](#license)
 
 ---
 
-## Why TrustLens Is Different
+## What is TrustLens?
 
-<table>
-<tr><th>Capability</th><th>Google Safe Browsing</th><th>VirusTotal</th><th>URLScan.io</th><th><strong>TrustLens AI</strong></th></tr>
-<tr><td>Explainable evidence trail</td><td>No</td><td>Partial</td><td>Partial</td><td><strong>Full transparency</strong></td></tr>
-<tr><td>Hybrid AI + Rule scoring</td><td>No</td><td>No</td><td>No</td><td><strong>70/30 model</strong></td></tr>
-<tr><td>Visual clone detection</td><td>No</td><td>No</td><td>No</td><td><strong>Perceptual hashing</strong></td></tr>
-<tr><td>Zero-day anomaly heuristics</td><td>No</td><td>No</td><td>No</td><td><strong>4-axis scoring</strong></td></tr>
-<tr><td>Community crowd reports</td><td>No</td><td>Yes</td><td>No</td><td><strong>Weighted consensus</strong></td></tr>
-<tr><td>Threat intel aggregation</td><td>N/A</td><td>Partial</td><td>Partial</td><td><strong>Multi-feed pipeline</strong></td></tr>
-<tr><td>Multi-provider AI</td><td>No</td><td>No</td><td>No</td><td><strong>Gemini, Grok, OpenAI, Anthropic</strong></td></tr>
-<tr><td>Enterprise brand monitoring</td><td>No</td><td>No</td><td>Partial</td><td><strong>Webhook alerts</strong></td></tr>
-<tr><td>Anti-hallucination pipeline</td><td>N/A</td><td>N/A</td><td>N/A</td><td><strong>Multi-layer defense</strong></td></tr>
-<tr><td>Full audit logging</td><td>No</td><td>Partial</td><td>No</td><td><strong>Structured events</strong></td></tr>
-</table>
+TrustLens is an open-source security tool that analyses any URL through **15+ independent analysis engines** running in parallel, combines rule-based heuristics (70%) with AI advisory signals (30%), and produces a transparent, explainable trust score from 0–100.
+
+Unlike opaque "safe/unsafe" verdicts, TrustLens shows you **exactly why** a URL is risky — every signal, every rule, every AI finding is visible in the full-transparency Deep Dive panel.
+
+**Key Principles:**
+
+- 🔍 **Full Transparency** — Every signal is shown with evidence and source
+- 🧠 **AI is Advisory** — AI never directly determines the verdict; rules lead
+- 🛡️ **Anti-Hallucination** — AI prompts include injection fences and calibration anchors
+- ⚡ **Real-time** — 15+ engines run in parallel via async pipeline
+- 🔒 **Security-first** — SSRF protection, input sanitisation, sandboxed browser
+
+---
+
+## Features
+
+### Core Analysis
+
+- **Sandboxed Browser Crawl** — Headless Chromium with intelligent page-load waiting (handles SPAs, loading screens, JS frameworks)
+- **AI Deception Classifier** — Multi-provider LLM analysis with anti-hallucination prompts, confidence calibration, and injection detection
+- **Brand Impersonation Detection** — 50+ brand registry with Levenshtein typosquatting, homograph detection, and content similarity
+- **Domain Intelligence** — RDAP lookup, domain age scoring (14-tier), structural analysis, suspicious registrar detection
+- **Security Header Audit** — CSP, HSTS, X-Frame-Options, X-Content-Type-Options analysis
+- **SSL Certificate Extraction** — Real TLS connection to extract protocol version, issuer, validity, SAN, serial number
+
+### Advanced Detection
+
+- **Behavioral Analysis** — JS redirect chains, anti-analysis detection, urgency language, popup abuse, clipboard manipulation, WebSocket/ServiceWorker detection
+- **Tracker & Malware Detection** — 24 analytics + 17 ad + 15 fingerprinting + 12 malware/cryptominer pattern databases
+- **Download Threat Scanner** — Detects dangerous file extensions (.exe, .ps1, .bat, etc.) and auto-download scripts
+- **Screenshot Visual Clone Detection** — Perceptual hash comparison against known brand screenshots
+- **Zero-Day Suspicion Scoring** — Structural anomaly detection across 4 sub-scorers
+- **Heuristic Rules** — URL structure, form analysis, cross-origin submission, content patterns, redirect behavior, external resource loading
+
+### Platform Features
+
+- **Live Page Screenshot** — Captured after intelligent page-load wait, stored in-memory only
+- **Community Reporting** — Crowdsourced URL reports with consensus scoring
+- **Threat Intel Feeds** — Auto-ingesting external threat intelligence feeds
+- **Enterprise Mode** — Brand monitoring, API key management, audit logging
+- **Interactive Setup Wizard** — Choose your LLM provider interactively on first start
 
 ---
 
 ## Architecture
 
 ```
-+------------------------------------------------------------------------------+
-|                      React Dashboard (Port 5173)                             |
-|  +-----------+  +-----------+  +-----------+  +-----------+  +----------+   |
-|  | URL Input |  | Score     |  | Evidence  |  | Threat    |  | Community|   |
-|  | Scanner   |  | Gauge     |  | Timeline  |  | Map       |  | Reports  |   |
-|  +-----------+  +-----------+  +-----------+  +-----------+  +----------+   |
-+--------------------------------------+---------------------------------------+
-                                       | HTTP/JSON
-+--------------------------------------v---------------------------------------+
-|                      FastAPI Backend (Port 8000)                             |
-|  +----------+  +----------+  +----------+  +----------+  +--------------+   |
-|  | CORS     |  | Rate     |  | Domain   |  | API Key  |  | Observability|   |
-|  |          |  | Limiter  |  | Filter   |  | Auth     |  | and Audit    |   |
-|  +----------+  +----------+  +----------+  +----------+  +--------------+   |
-|                                                                              |
-|  +------------------------------------------------------------------------+  |
-|  |                     API Routes (/api/v1/*)                             |  |
-|  |  POST /analyze            GET /analysis/{id}  GET /analysis/{id}/report|  |
-|  |  POST /analyze/batch      GET /health                                  |  |
-|  |  POST /community/report   GET /community/consensus                     |  |
-|  |  POST /keys/register      GET /threat-intel/lookup                     |  |
-|  |  POST /threat-intel/ingest  GET /threat-intel/stats                    |  |
-|  |  POST /enterprise/monitors  GET /enterprise/alerts                     |  |
-|  +------------------------------------+-----------------------------------+  |
-|                                       |                                      |
-|                              +--------v--------+                             |
-|                              |  Orchestrator   |                             |
-|                              +--------+--------+                             |
-|                                       |                                      |
-|    +----------+----------+----+-------+--------+----------+----------+       |
-|    v          v          v    v                 v          v          v       |
-| +--------++--------++------++--------++----------++--------++----------+     |
-| |Playwrt ||Analysis||  AI  ||Screen- ||Zero-Day  ||Threat  ||Community |     |
-| |Crawler ||Pipeline||Provdr||shot    ||Suspicion ||Intel   ||Consensus |     |
-| |(sandbox||        ||      ||Similar.||Scorer    ||Feeds   ||          |     |
-| |)       ||  Rules ||Gemini|+--------++----------++--------++----------+     |
-| +--------+|  Brand ||OpenAI|                                                 |
-|           |  Behav.||Anthr.|    +--------------------------+                 |
-|           |  Domain|+------+    |  Enterprise Monitoring   |                 |
-|           |  Header|            |  Brand Scanning          |                 |
-|           |  Contnt|            |  Webhook Alerts           |                |
-|           +--------+            +--------------------------+                 |
-|                                       |                                      |
-|                              +--------v--------+                             |
-|                              | Scoring Engine  |                             |
-|                              | 70% Rules + 30% |                            |
-|                              | AI + Supplements|                             |
-|                              +--------+--------+                             |
-|                                       |                                      |
-|                              +--------v--------+                             |
-|                              |  SQLite / DB    |  9 tables                   |
-|                              |  (repo pattern) |  repository pattern         |
-|                              +-----------------+                             |
-+------------------------------------------------------------------------------+
+┌─────────────────────────────────────────────────────────────┐
+│                    React Frontend (Vite)                     │
+│  ScanPage → ResultsPage → ScoreGauge + SignalCards + DeepDive│
+└────────────────────────┬────────────────────────────────────┘
+                         │ REST API
+┌────────────────────────▼────────────────────────────────────┐
+│                   FastAPI Backend                            │
+│                                                             │
+│  ┌──────────┐   ┌──────────────────────────────────────┐   │
+│  │  Queue    │──▶│           Orchestrator                │   │
+│  └──────────┘   │                                      │   │
+│                 │  1. Crawl (Playwright)                │   │
+│                 │  2. ┌─────────────────────────────┐   │   │
+│                 │     │ Parallel Analysis Engines    │   │   │
+│                 │     │ ┌─────┐ ┌─────┐ ┌────────┐ │   │   │
+│                 │     │ │Rules│ │ AI  │ │ Brand  │ │   │   │
+│                 │     │ ├─────┤ ├─────┤ ├────────┤ │   │   │
+│                 │     │ │Behav│ │Domn │ │Headers │ │   │   │
+│                 │     │ ├─────┤ ├─────┤ ├────────┤ │   │   │
+│                 │     │ │Track│ │Down │ │Screen  │ │   │   │
+│                 │     │ ├─────┤ ├─────┤ ├────────┤ │   │   │
+│                 │     │ │Logo │ │Pay  │ │Threat  │ │   │   │
+│                 │     │ ├─────┤ ├─────┤ ├────────┤ │   │   │
+│                 │     │ │Comm │ │Zero │ │Content │ │   │   │
+│                 │     │ └─────┘ └─────┘ └────────┘ │   │   │
+│                 │     └─────────────────────────────┘   │   │
+│                 │  3. Scoring (70/30 hybrid)            │   │
+│                 │  4. AI Explanation                    │   │
+│                 │  5. Store Results                     │   │
+│                 └──────────────────────────────────────┘   │
+│                                                             │
+│  SQLite DB │ Rate Limiter │ SSRF Guard │ Audit Logger       │
+└─────────────────────────────────────────────────────────────┘
 ```
-
----
-
-## Hybrid AI + Rule Scoring Model
-
-TrustLens uses a **70/30 hybrid model** that combines deterministic rule-based analysis with AI advisory signals.
-
-### Why Not 100% AI?
-
-AI models hallucinate. They produce confident-sounding verdicts with fabricated evidence. In security, a false negative can lead to credential theft. A false positive erodes user trust.
-
-Our solution: **AI advises, rules decide.**
-
-### Rule Component Weights
-
-| Sub-Component       | Weight | What It Measures                          |
-| ------------------- | ------ | ----------------------------------------- |
-| Heuristic Rules     | 30%    | SSL, forms, URL patterns, content signals |
-| Brand Impersonation | 25%    | Levenshtein similarity, typosquatting     |
-| Behavioral Analysis | 20%    | Redirects, hidden elements, evasion       |
-| Domain Intelligence | 15%    | Domain age, RDAP, DNS, suspicious TLDs    |
-| Security Headers    | 10%    | HSTS, CSP, X-Frame-Options                |
-
-### Supplementary Signal Adjustments
-
-After the core 70/30 calculation, hard-evidence signals apply additional adjustments:
-
-| Signal                      | Max Adjustment | Trigger Condition                    |
-| --------------------------- | -------------- | ------------------------------------ |
-| **Screenshot Visual Clone** | -15 pts        | Perceptual hash similarity >= 85%    |
-| **Zero-Day Suspicion**      | -10 pts        | Anomaly score >= 50 (sigmoid scaled) |
-| **Threat Intel Match**      | -30 pts        | Known threat in feed databases       |
-| **Community Consensus**     | +/-5 pts       | Weighted crowd reports               |
-
-### Risk Categories
-
-| Score  | Category       | Meaning                             |
-| ------ | -------------- | ----------------------------------- |
-| 75-100 | **Safe**       | No significant risk indicators      |
-| 50-74  | **Low Risk**   | Minor concerns, likely legitimate   |
-| 25-49  | **Suspicious** | Multiple risk indicators present    |
-| 0-24   | **High Risk**  | Strong evidence of malicious intent |
-
-> **Deep dive:** See [docs/scoring-methodology.md](docs/scoring-methodology.md) for the full whitepaper.
 
 ---
 
@@ -176,310 +125,264 @@ After the core 70/30 calculation, hard-evidence signals apply additional adjustm
 
 ### Prerequisites
 
-- Python 3.11+
-- Node.js 18+ (for React dashboard)
-- An AI provider API key (Gemini, OpenAI, Anthropic, or Grok)
+| Tool        | Version                                 | Required |
+| ----------- | --------------------------------------- | -------- |
+| Python      | 3.9+                                    | ✅       |
+| Node.js     | 18+                                     | ✅       |
+| npm         | 9+                                      | ✅       |
+| LLM API Key | Any of: Gemini, OpenAI, Anthropic, Grok | ✅       |
 
-### 1. Clone and Install Backend
+### One-Command Start
+
+```bash
+git clone https://github.com/abhishekayu/TrustLens.git
+cd TrustLens
+chmod +x start.sh
+./start.sh
+```
+
+That's it. The `start.sh` script will:
+
+1. 🧙 **Run the Setup Wizard** — Interactively pick your LLM provider and enter your API key
+2. 📦 **Install all dependencies** — Both Python (`pip install -r requirements.txt`) and Node.js (`npm install`)
+3. 🎭 **Install Playwright Chromium** — For sandboxed browser crawling
+4. 🚀 **Start the backend** — FastAPI on `http://localhost:3010`
+5. ⚛️ **Start the frontend** — Vite dev server on `http://localhost:5173`
+
+```
+╔══════════════════════════════════════════════════╗
+║            🚀  TrustLens AI Running               ║
+╠══════════════════════════════════════════════════╣
+║  Frontend  → http://localhost:5173               ║
+║  Backend   → http://localhost:3010               ║
+║  API Docs  → http://localhost:3010/docs          ║
+╠══════════════════════════════════════════════════╣
+║  Press Ctrl+C to stop                            ║
+╚══════════════════════════════════════════════════╝
+```
+
+> **Stop everything:** Press `Ctrl+C` — the script gracefully shuts down both servers.
+
+---
+
+## Setup Wizard — LLM Provider
+
+On first run, the interactive CLI wizard prompts you to choose an AI provider:
+
+```
+╔══════════════════════════════════════════════════════════════╗
+║   ████████╗██████╗ ██╗   ██╗███████╗████████╗                ║
+║      ██║   ██████╔╝██║   ██║███████╗   ██║                   ║
+║      ██║   ██║  ██║╚██████╔╝███████║   ██║                   ║
+║          L E N S   A I   Setup Wizard                        ║
+╚══════════════════════════════════════════════════════════════╝
+
+  Choose your LLM provider:
+
+   1. 🤖  Grok (xAI)
+   2. 💎  Gemini (Google)
+   3. 🧠  Anthropic (Claude)
+   4. ⚡  OpenAI (GPT)
+
+➤ Select provider (1-4):
+```
+
+### Provider Details
+
+| #   | Provider               | Default Model              | API Key URL                                                          |
+| --- | ---------------------- | -------------------------- | -------------------------------------------------------------------- |
+| 1   | **Grok (xAI)**         | `grok-3`                   | [console.x.ai](https://console.x.ai)                                 |
+| 2   | **Gemini (Google)**    | `gemini-2.5-flash`         | [aistudio.google.com/apikey](https://aistudio.google.com/apikey)     |
+| 3   | **Anthropic (Claude)** | `claude-sonnet-4-20250514` | [console.anthropic.com](https://console.anthropic.com/settings/keys) |
+| 4   | **OpenAI (GPT)**       | `gpt-4o`                   | [platform.openai.com/api-keys](https://platform.openai.com/api-keys) |
+
+After entering your API key, the wizard saves the config to `.env`. On subsequent starts, it offers:
+
+- **C** — Continue with saved config
+- **N** — Pick a new LLM provider
+- **Q** — Quit
+
+You can also specify a custom model name when prompted (e.g., `gpt-4o-mini`, `claude-haiku-4-20250514`).
+
+---
+
+## Manual Setup
+
+If you prefer manual setup over `./start.sh`:
+
+### 1. Clone & Install
 
 ```bash
 git clone https://github.com/abhishekayu/TrustLens.git
 cd TrustLens
 
-# Create virtual environment
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+# Create virtual environment (recommended)
+python3 -m venv .venv
+source .venv/bin/activate
 
-# Install dependencies
+# Install Python dependencies
 pip install -r requirements.txt
-pip install -e .
 
 # Install Playwright browser
-playwright install chromium
+python3 -m playwright install chromium
+
+# Install frontend dependencies
+cd frontend && npm install && cd ..
 ```
 
-### 2. Configure
+### 2. Configure Environment
 
 ```bash
 cp .env.example .env
-# Edit .env - configure your AI provider
+```
+
+Edit `.env` and set your AI provider + API key:
+
+```env
+TRUSTLENS_AI_PROVIDER=gemini
+TRUSTLENS_GEMINI_API_KEY=your-api-key-here
+TRUSTLENS_GEMINI_MODEL=gemini-2.5-flash
 ```
 
 ### 3. Start Backend
 
 ```bash
-uvicorn trustlens.main:app --reload --port 8000
+PYTHONPATH=src python3 -m uvicorn trustlens.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 4. Start React Dashboard
+### 4. Start Frontend
 
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
-**Backend API docs:** http://localhost:8000/docs
-**React Dashboard:** http://localhost:5173
+Open `http://localhost:5173` in your browser.
 
 ---
 
-## AI Provider Setup
+## Docker
 
-TrustLens supports multiple AI providers. Run the interactive setup wizard or configure manually.
-
-### Interactive Setup
-
-```bash
-python setup_wizard.py
-# Or simply start the backend — the wizard runs automatically on first launch
-uvicorn trustlens.main:app --reload --port 8000
-```
-
-### Manual Configuration
-
-```env
-# Gemini (default)
-TRUSTLENS_AI_PROVIDER=gemini
-TRUSTLENS_GEMINI_API_KEY=your-key
-TRUSTLENS_GEMINI_MODEL=gemini-2.5-flash
-
-# OpenAI
-TRUSTLENS_AI_PROVIDER=openai
-TRUSTLENS_OPENAI_API_KEY=your-key
-TRUSTLENS_OPENAI_MODEL=gpt-4o
-
-# Anthropic
-TRUSTLENS_AI_PROVIDER=anthropic
-TRUSTLENS_ANTHROPIC_API_KEY=your-key
-TRUSTLENS_ANTHROPIC_MODEL=claude-sonnet-4-20250514
-
-# Grok (xAI)
-TRUSTLENS_AI_PROVIDER=grok
-TRUSTLENS_GROK_API_KEY=your-key
-TRUSTLENS_GROK_MODEL=grok-3-mini
-```
-
-### Supported Providers
-
-| Provider      | Model Example              | Best For                        |
-| ------------- | -------------------------- | ------------------------------- |
-| **Gemini**    | `gemini-2.5-flash`         | Default &mdash; fast & accurate |
-| **OpenAI**    | `gpt-4o`                   | Highest accuracy                |
-| **Anthropic** | `claude-sonnet-4-20250514` | Strong reasoning                |
-| **Grok**      | `grok-3-mini`              | xAI ecosystem                   |
-
----
-
-## Deployment
-
-### Docker
+### Build & Run
 
 ```bash
 docker build -t trustlens-ai .
 docker run -p 8000:8000 --env-file .env trustlens-ai
 ```
 
-### Docker Compose (Full Stack)
-
-```yaml
-version: "3.9"
-services:
-  backend:
-    build: .
-    ports:
-      - "8000:8000"
-    env_file: .env
-    volumes:
-      - ./data:/app/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  frontend:
-    build: ./frontend
-    ports:
-      - "5173:80"
-    depends_on:
-      - backend
-    environment:
-      - VITE_API_URL=http://backend:8000
-```
-
-### Production Checklist
-
-- [ ] Set `TRUSTLENS_DEBUG=false`
-- [ ] Enable `TRUSTLENS_API_KEY_REQUIRED=true`
-- [ ] Configure threat feed URLs
-- [ ] Set up reverse proxy (nginx/Caddy) with TLS
-- [ ] Enable audit logging
-- [ ] Configure rate limits for production traffic
-- [ ] Swap SQLite for PostgreSQL (change `TRUSTLENS_DB_URL`)
-
----
-
-## API Reference
-
-### Core Analysis
-
-| Method | Endpoint                       | Description                |
-| ------ | ------------------------------ | -------------------------- |
-| `POST` | `/api/v1/analyze`              | Submit URL for analysis    |
-| `POST` | `/api/v1/analyze/batch`        | Submit multiple URLs       |
-| `GET`  | `/api/v1/analysis/{id}`        | Get analysis status/result |
-| `GET`  | `/api/v1/analysis/{id}/report` | Full transparency report   |
-
-### Community
-
-| Method | Endpoint                      | Description                 |
-| ------ | ----------------------------- | --------------------------- |
-| `POST` | `/api/v1/community/report`    | Submit a community report   |
-| `GET`  | `/api/v1/community/consensus` | Get crowd consensus for URL |
-| `GET`  | `/api/v1/community/reports`   | List reports for URL/domain |
-
-### Threat Intelligence
-
-| Method | Endpoint                      | Description                |
-| ------ | ----------------------------- | -------------------------- |
-| `GET`  | `/api/v1/threat-intel/lookup` | Check domain against feeds |
-| `GET`  | `/api/v1/threat-intel/stats`  | Feed ingestion statistics  |
-| `POST` | `/api/v1/threat-intel/ingest` | Trigger feed re-ingestion  |
-
-### API Keys
-
-| Method | Endpoint                | Description             |
-| ------ | ----------------------- | ----------------------- |
-| `POST` | `/api/v1/keys/register` | Register for an API key |
-
-### Enterprise
-
-| Method | Endpoint                      | Description          |
-| ------ | ----------------------------- | -------------------- |
-| `POST` | `/api/v1/enterprise/monitors` | Create brand monitor |
-| `GET`  | `/api/v1/enterprise/monitors` | List active monitors |
-| `GET`  | `/api/v1/enterprise/alerts`   | Get brand alerts     |
-
-### System
-
-| Method | Endpoint  | Description            |
-| ------ | --------- | ---------------------- |
-| `GET`  | `/health` | Health check + metrics |
-
-<details>
-<summary><strong>Example: Analyze a URL</strong></summary>
+### Docker Compose
 
 ```bash
-curl -X POST http://localhost:8000/api/v1/analyze \
-  -H "Content-Type: application/json" \
-  -d '{
-    "url": "https://suspicious-site.example.com/login",
-    "options": {
-      "enable_ai": true,
-      "enable_domain_intel": true,
-      "enable_brand_check": true,
-      "enable_behavioral": true,
-      "enable_threat_intel": true,
-      "enable_community": true,
-      "enable_zeroday": true
-    }
-  }'
+docker-compose up
 ```
 
-**Response (202 Accepted):**
-
-```json
-{
-  "analysis_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
-  "status": "pending",
-  "url": "https://suspicious-site.example.com/login",
-  "submitted_at": "2026-03-04T10:30:00Z"
-}
-```
-
-</details>
+This starts both backend (`:8000`) and frontend (`:5173`) containers.
 
 ---
 
-## React Dashboard
+## Configuration
 
-The React frontend provides a modern, real-time interface for TrustLens.
+All configuration is via environment variables with the `TRUSTLENS_` prefix. See [.env.example](.env.example) for the full list.
 
-### Screenshots
+### Key Settings
 
-<p align="center">
-  <img src="docs/assets/screenshot-scan.png" alt="URL Scanner" width="700" /><br/>
-  <em>URL Scanner &mdash; paste a URL and get instant trust analysis</em>
-</p>
-
-<p align="center">
-  <img src="docs/assets/screenshot-results.png" alt="Analysis Results" width="700" /><br/>
-  <em>Analysis Results &mdash; score gauge, risk signals, evidence timeline</em>
-</p>
-
-<p align="center">
-  <img src="docs/assets/screenshot-report.png" alt="Transparency Report" width="700" /><br/>
-  <em>Transparency Report &mdash; full explainability for every decision</em>
-</p>
-
-<p align="center">
-  <img src="docs/assets/screenshot-community.png" alt="Community Reports" width="700" /><br/>
-  <em>Community Reports &mdash; crowd-sourced trust signals</em>
-</p>
+| Variable                              | Default  | Description                                           |
+| ------------------------------------- | -------- | ----------------------------------------------------- |
+| `TRUSTLENS_AI_PROVIDER`               | `gemini` | LLM provider: `gemini`, `openai`, `anthropic`, `grok` |
+| `TRUSTLENS_CRAWLER_TIMEOUT`           | `30`     | Max seconds for page crawl                            |
+| `TRUSTLENS_SSRF_BLOCK_PRIVATE`        | `true`   | Block private/internal IPs                            |
+| `TRUSTLENS_SCORE_WEIGHT_RULES`        | `0.70`   | Rule-based signal weight                              |
+| `TRUSTLENS_SCORE_WEIGHT_AI`           | `0.30`   | AI advisory signal weight                             |
+| `TRUSTLENS_RATE_LIMIT_REQUESTS`       | `30`     | Requests per window                                   |
+| `TRUSTLENS_RATE_LIMIT_WINDOW_SECONDS` | `60`     | Rate limit window                                     |
+| `TRUSTLENS_SCREENSHOT_ENABLED`        | `true`   | Capture page screenshots                              |
+| `TRUSTLENS_COMMUNITY_REPORTS_ENABLED` | `true`   | Enable community reports                              |
+| `TRUSTLENS_ENTERPRISE_MODE`           | `false`  | Enterprise brand monitoring                           |
+| `TRUSTLENS_API_KEY_REQUIRED`          | `false`  | Require API keys                                      |
+| `TRUSTLENS_AUDIT_LOG_ENABLED`         | `true`   | Audit logging                                         |
 
 ---
 
-## Roadmap
+## API Endpoints
 
-### v0.2 - Current Release
+| Method | Endpoint                            | Description                    |
+| ------ | ----------------------------------- | ------------------------------ |
+| `POST` | `/api/analyze`                      | Submit a URL for analysis      |
+| `GET`  | `/api/analyze/{id}`                 | Get analysis results (poll)    |
+| `GET`  | `/api/report/{id}`                  | Get formatted report           |
+| `GET`  | `/health`                           | Health check + provider status |
+| `POST` | `/api/community/report`             | Submit community report        |
+| `GET`  | `/api/community/consensus/{domain}` | Get community consensus        |
+| `POST` | `/api/threat-intel/feeds`           | Add threat intel feed          |
+| `GET`  | `/api/threat-intel/check/{domain}`  | Check domain against feeds     |
+| `POST` | `/api/keys`                         | Create API key (enterprise)    |
+| `GET`  | `/api/enterprise/brand-monitor`     | Brand monitor status           |
 
-- [x] 70/30 hybrid AI + rule scoring engine
-- [x] 15+ analysis modules (brand, behavioral, domain, headers, content)
-- [x] Screenshot similarity via perceptual hashing
-- [x] Zero-day suspicion anomaly scoring
-- [x] Community reporting with weighted consensus
-- [x] Threat intelligence feed aggregation
-- [x] Tiered API key authentication
-- [x] Enterprise brand monitoring stubs
-- [x] Observability, audit logging, metrics
-- [x] React dashboard with real-time scanning
-- [x] Multi-provider AI support (Gemini, OpenAI, Anthropic, Grok)
-- [x] Docker deployment
+Full interactive docs at `http://localhost:3010/docs` (Swagger UI).
 
-### v0.3 - Intelligence Expansion
+---
 
-- [ ] Browser extension (Chrome/Firefox) for real-time protection
-- [ ] Logo detection via CLIP/YOLOv8 vision models
-- [ ] Certificate Transparency log monitoring
-- [ ] Email header analysis module
-- [ ] Historical trend analysis per domain
-- [ ] Bulk CSV import/export
+## Analysis Engines
 
-### v0.4 - Enterprise Hardening
+TrustLens runs **15+ engines in parallel** for each URL scan:
 
-- [ ] PostgreSQL primary database
-- [ ] Redis-backed task queue
-- [ ] Multi-tenant workspace isolation
-- [ ] SSO/SAML authentication
-- [ ] Custom scoring rule builder (no-code)
-- [ ] Webhook integrations (Slack, Teams, PagerDuty)
+| Engine                      | What It Does                             | Key Signals                                                  |
+| --------------------------- | ---------------------------------------- | ------------------------------------------------------------ |
+| **Heuristic Rules**         | URL structure, forms, content, redirects | SSL, suspicious URLs, cross-origin forms, hidden iframes     |
+| **AI Deception Classifier** | LLM-powered phishing/scam detection      | Deception confidence, indicators, classifier scores          |
+| **Brand Impersonation**     | Typosquatting & brand clone detection    | Domain similarity, content match, impersonation probability  |
+| **Domain Intelligence**     | RDAP, age, TLD risk, DNS, structure      | Domain age, suspicious TLD, registrar, hyphen/digit analysis |
+| **Behavioral Analysis**     | Runtime behavior & evasion detection     | JS redirects, obfuscation, anti-analysis, popup abuse        |
+| **Security Headers**        | HTTP security headers audit              | CSP, HSTS, X-Frame-Options presence                          |
+| **SSL Certificate**         | Real TLS cert extraction & validation    | Protocol version, issuer, validity, SAN                      |
+| **Tracker & Malware**       | Analytics/ad/fingerprint/malware scan    | 68+ tracker patterns, crypto miners, spyware                 |
+| **Download Threats**        | Dangerous file extension detection       | .exe, .ps1, .bat, auto-download scripts                      |
+| **Screenshot Clone**        | Visual similarity via perceptual hashing | pHash/dHash comparison against brand screenshots             |
+| **Zero-Day Suspicion**      | Structural anomaly scoring               | Novel attack pattern indicators                              |
+| **Payment Detection**       | Payment form & crypto address scan       | Card fields, crypto wallets, payment processors              |
+| **Content Extraction**      | Deep HTML/JS content analysis            | Text extraction, script analysis, metadata                   |
+| **Community Reports**       | Crowdsourced URL safety data             | Community consensus, report counts                           |
+| **Threat Intel Feeds**      | External threat intelligence checks      | Known malicious domains, blocklist matches                   |
 
-### v0.5 - Intelligence Network
+---
 
-- [ ] Federated threat sharing between TrustLens instances
-- [ ] ML-based reporter reputation scoring
-- [ ] Automated phishing takedown integration
-- [ ] API marketplace for third-party analyzers
-- [ ] Mobile app (React Native)
+## Scoring Methodology
 
-### v1.0 - Production GA
+```
+Final Score = (Rule Score × 0.70) + (AI Score × 0.30)
+```
 
-- [ ] SOC 2 Type II compliance documentation
-- [ ] 99.9% uptime SLA architecture
-- [ ] Horizontally scalable worker pool
-- [ ] Full internationalization (i18n)
-- [ ] Public threat intelligence dashboard
+### Rule Score Components
+
+| Component           | Weight | Description                               |
+| ------------------- | ------ | ----------------------------------------- |
+| Heuristic Rules     | 30%    | URL patterns, forms, content, redirects   |
+| Brand Impersonation | 25%    | Domain/content similarity to known brands |
+| Behavioral Analysis | 20%    | Runtime behavior & evasion techniques     |
+| Domain Intelligence | 15%    | Age, TLD, registrar, structure            |
+| Security Headers    | 10%    | HTTP security header presence             |
+
+### Risk Categories
+
+| Score  | Category          | Description                           |
+| ------ | ----------------- | ------------------------------------- |
+| 75–100 | ✅ **Safe**       | No significant risk indicators        |
+| 50–74  | 🟡 **Low Risk**   | Minor concerns, likely legitimate     |
+| 25–49  | 🟠 **Suspicious** | Multiple concerning signals           |
+| 0–24   | 🔴 **High Risk**  | Strong indicators of malicious intent |
+
+### AI Confidence Calibration
+
+The AI confidence is calibrated against reference anchors to prevent overclassification:
+
+| Range     | Meaning                                    |
+| --------- | ------------------------------------------ |
+| 0.00–0.15 | No evidence / normal page                  |
+| 0.15–0.35 | Minor suspicious element, likely benign    |
+| 0.35–0.55 | Moderate concern, multiple soft indicators |
+| 0.55–0.75 | Clear deceptive intent with evidence       |
+| 0.75–0.90 | Strong multi-signal deception pattern      |
+| 0.90–1.00 | Reserved for overwhelming evidence only    |
 
 ---
 
@@ -487,123 +390,170 @@ The React frontend provides a modern, real-time interface for TrustLens.
 
 ```
 TrustLens/
-  frontend/                        React 19 + Vite dashboard
-    src/
-      components/                  Reusable UI components
-      pages/                       Route pages
-      hooks/                       Custom React hooks
-      services/                    API client
-      App.tsx
-    package.json
-  src/trustlens/                   Python backend
-    main.py                        FastAPI entry-point
-    core/                          Settings, logging
-    models/                        Domain models (Pydantic v2)
-    schemas/                       API request/response schemas
-    db/                            Database + 8 repositories
-    security/                      SSRF protection
-    observability/                 Audit logger, metrics
-    api/
-      middleware/                  Rate limit, domain filter, API auth
-      routes/                      All API endpoints
-    services/
-      orchestrator.py              Analysis pipeline coordinator
-      scoring/                     70/30 hybrid scoring engine
-      ai/providers/                Gemini, OpenAI, Anthropic, Grok
-      analysis/                    9 analysis modules
-      community/                   Community reporting
-      threat_intel/                Feed parsers + ingestion
-      enterprise/                  Brand monitoring
-  docs/                            Documentation
-    scoring-methodology.md         Scoring whitepaper
-    ai-trust-explanation.md        AI trust model
-    security-model.md              Security architecture
-    anti-hallucination.md          Anti-hallucination strategy
-  Dockerfile
-  docker-compose.yml
-  requirements.txt
-  pyproject.toml
-  CONTRIBUTING.md
-  LICENSE (MIT)
-  README.md
+├── start.sh                    # One-command start script
+├── setup_wizard.py             # Interactive LLM provider wizard
+├── requirements.txt            # Python dependencies
+├── pyproject.toml              # Project metadata & build config
+├── Dockerfile                  # Container build (python:3.12-slim)
+├── docker-compose.yml          # Multi-container setup
+├── .env.example                # Configuration template (30+ settings)
+│
+├── src/trustlens/
+│   ├── main.py                 # FastAPI app entry point
+│   ├── api/
+│   │   ├── routes/
+│   │   │   ├── analyze.py      # URL analysis endpoints
+│   │   │   ├── community.py    # Community reporting
+│   │   │   ├── enterprise.py   # Brand monitoring
+│   │   │   ├── health.py       # Health check
+│   │   │   ├── keys.py         # API key management
+│   │   │   ├── report.py       # Report generation
+│   │   │   └── threat_intel.py # Threat intel feeds
+│   │   ├── middleware/
+│   │   │   ├── api_auth.py     # API key authentication
+│   │   │   ├── rate_limit.py   # Rate limiting
+│   │   │   └── domain_filter.py# Domain allowlist/denylist
+│   │   └── deps.py             # Dependency injection
+│   │
+│   ├── services/
+│   │   ├── ai/                 # AI provider system
+│   │   │   └── __init__.py     # Prompts, calibration, multi-provider
+│   │   ├── analysis/
+│   │   │   ├── behavioral.py   # Behavioral redirect/evasion analysis
+│   │   │   ├── brand_similarity.py  # Brand impersonation (50+ brands)
+│   │   │   ├── content_extractor.py # Content parsing engine
+│   │   │   ├── domain_intel.py      # RDAP, DNS, domain scoring
+│   │   │   ├── download_threat_detector.py  # Dangerous download detection
+│   │   │   ├── logo_detection.py    # Logo similarity analysis
+│   │   │   ├── payment_detector.py  # Payment form/crypto detection
+│   │   │   ├── rules.py            # Heuristic rule engine (7 rules)
+│   │   │   ├── screenshot_similarity.py  # Visual clone detection
+│   │   │   ├── security_headers.py  # Security header audit
+│   │   │   ├── tracker_detector.py  # Tracker/malware scanner (68+ patterns)
+│   │   │   └── zeroday.py          # Zero-day suspicion scoring
+│   │   ├── crawler/            # Playwright browser + intelligent page-load
+│   │   ├── scoring/            # Hybrid 70/30 scoring engine
+│   │   ├── orchestrator.py     # Analysis pipeline orchestrator
+│   │   ├── queue/              # Async task queue
+│   │   ├── community/          # Community reporting service
+│   │   ├── enterprise/         # Brand monitoring service
+│   │   └── threat_intel/       # Threat feed ingestion
+│   │
+│   ├── models/                 # Pydantic data models
+│   ├── schemas/                # API request/response schemas
+│   ├── security/               # SSRF protection, URL validation
+│   ├── core/                   # Settings, logging config
+│   ├── db/                     # SQLite database layer (aiosqlite)
+│   ├── observability/          # Audit logging
+│   └── utils/                  # Utility functions
+│
+├── frontend/
+│   ├── src/
+│   │   ├── pages/
+│   │   │   ├── ScanPage.tsx    # URL input + feature cards
+│   │   │   ├── ResultsPage.tsx # Score gauge + signals + AI assessment
+│   │   │   ├── AboutPage.tsx   # About & license
+│   │   │   └── CommunityPage.tsx  # Community reports
+│   │   ├── components/
+│   │   │   ├── DeepDive.tsx    # Full transparency panel (15 sections)
+│   │   │   ├── ScoreGauge.tsx  # Animated circular score gauge
+│   │   │   ├── SignalCard.tsx  # Individual signal cards
+│   │   │   ├── PipelineSteps.tsx  # Real-time pipeline progress
+│   │   │   ├── Layout.tsx      # App shell + navigation
+│   │   │   └── EvidenceTimeline.tsx  # Evidence timeline
+│   │   ├── services/api.ts     # API client + TypeScript types
+│   │   └── hooks/              # React hooks
+│   ├── package.json
+│   └── vite.config.ts
+│
+├── docs/
+│   ├── ai-trust-explanation.md # AI trust scoring explained
+│   ├── anti-hallucination.md   # Anti-hallucination strategy
+│   ├── scoring-methodology.md  # Scoring algorithm details
+│   └── security-model.md       # Security architecture
+│
+├── tests/                      # Test suite
+└── LICENSE                     # MIT License
 ```
 
 ---
 
-## Configuration
+## Tech Stack
 
-All settings via environment variables (prefix `TRUSTLENS_`):
+### Backend
 
-<details>
-<summary><strong>Full Configuration Table</strong></summary>
+| Technology               | Purpose                              |
+| ------------------------ | ------------------------------------ |
+| **Python 3.9+**          | Core language                        |
+| **FastAPI**              | Async REST API framework             |
+| **Pydantic v2**          | Data validation & serialisation      |
+| **Playwright**           | Headless browser crawling (Chromium) |
+| **SQLite + aiosqlite**   | Async embedded database              |
+| **httpx**                | Async HTTP client                    |
+| **structlog**            | Structured logging                   |
+| **tldextract**           | Domain parsing & TLD extraction      |
+| **python-Levenshtein**   | String similarity for typosquatting  |
+| **Pillow + imagehash**   | Screenshot perceptual hashing        |
+| **cryptography**         | SSL/TLS cert operations              |
+| **BeautifulSoup + lxml** | HTML parsing & content extraction    |
+| **dnspython**            | DNS resolution                       |
 
-| Variable                                    | Default                              | Description                                |
-| ------------------------------------------- | ------------------------------------ | ------------------------------------------ |
-| `TRUSTLENS_HOST`                            | `0.0.0.0`                            | Server bind address                        |
-| `TRUSTLENS_PORT`                            | `8000`                               | Server port                                |
-| `TRUSTLENS_DEBUG`                           | `false`                              | Debug mode                                 |
-| `TRUSTLENS_LOG_LEVEL`                       | `info`                               | Logging level                              |
-| `TRUSTLENS_DB_URL`                          | `sqlite+aiosqlite:///./trustlens.db` | Database URL                               |
-| `TRUSTLENS_AI_PROVIDER`                     | `gemini`                             | AI provider (gemini/openai/anthropic/grok) |
-| `TRUSTLENS_GEMINI_API_KEY`                  | -                                    | Gemini API key                             |
-| `TRUSTLENS_GEMINI_MODEL`                    | `gemini-2.5-flash`                   | Gemini model                               |
-| `TRUSTLENS_OPENAI_API_KEY`                  | -                                    | OpenAI API key                             |
-| `TRUSTLENS_OPENAI_MODEL`                    | `gpt-4o`                             | OpenAI model                               |
-| `TRUSTLENS_ANTHROPIC_API_KEY`               | -                                    | Anthropic API key                          |
-| `TRUSTLENS_ANTHROPIC_MODEL`                 | `claude-sonnet-4-20250514`           | Anthropic model                            |
-| `TRUSTLENS_GROK_API_KEY`                    | -                                    | Grok (xAI) API key                         |
-| `TRUSTLENS_GROK_MODEL`                      | `grok-3-mini`                        | Grok model                                 |
-| `TRUSTLENS_RATE_LIMIT_REQUESTS`             | `30`                                 | Max requests per window                    |
-| `TRUSTLENS_RATE_LIMIT_WINDOW_SECONDS`       | `60`                                 | Rate limit window                          |
-| `TRUSTLENS_SCORE_WEIGHT_RULES`              | `0.70`                               | Rule-based score weight                    |
-| `TRUSTLENS_SCORE_WEIGHT_AI`                 | `0.30`                               | AI advisory score weight                   |
-| `TRUSTLENS_API_KEY_REQUIRED`                | `false`                              | Require API keys                           |
-| `TRUSTLENS_THREAT_FEED_URLS`                | -                                    | Comma-separated feed URLs                  |
-| `TRUSTLENS_THREAT_FEED_REFRESH_HOURS`       | `6`                                  | Feed refresh interval                      |
-| `TRUSTLENS_SCREENSHOT_SIMILARITY_THRESHOLD` | `0.85`                               | Visual clone threshold                     |
-| `TRUSTLENS_COMMUNITY_REPORTS_ENABLED`       | `true`                               | Enable community reports                   |
-| `TRUSTLENS_ENTERPRISE_MODE`                 | `false`                              | Enable enterprise features                 |
-| `TRUSTLENS_AUDIT_LOG_ENABLED`               | `true`                               | Enable audit logging                       |
+### Frontend
 
-</details>
+| Technology          | Purpose                                |
+| ------------------- | -------------------------------------- |
+| **React 19**        | UI framework                           |
+| **TypeScript 5.9**  | Type safety                            |
+| **Vite 7**          | Build tool & dev server                |
+| **Tailwind CSS v4** | Utility-first styling (terminal theme) |
+| **Lucide React**    | Icon library                           |
+| **React Router v7** | Client-side routing                    |
 
----
+### AI Providers (choose one)
 
-## Documentation
-
-| Document                                                  | Description                                           |
-| --------------------------------------------------------- | ----------------------------------------------------- |
-| [Scoring Methodology](docs/scoring-methodology.md)        | Complete whitepaper on the 70/30 hybrid scoring model |
-| [AI Trust Explanation](docs/ai-trust-explanation.md)      | How AI is constrained and why                         |
-| [Security Model](docs/security-model.md)                  | SSRF protection, sandboxing, threat model             |
-| [Anti-Hallucination Strategy](docs/anti-hallucination.md) | Multi-layer defense against AI fabrication            |
-
-| [Contributing](CONTRIBUTING.md) | How to contribute to TrustLens |
+| Provider          | SDK                   | Default Model              |
+| ----------------- | --------------------- | -------------------------- |
+| **Google Gemini** | `google-generativeai` | `gemini-2.5-flash`         |
+| **OpenAI**        | `openai`              | `gpt-4o`                   |
+| **Anthropic**     | `anthropic`           | `claude-sonnet-4-20250514` |
+| **Grok (xAI)**    | `openai` (compatible) | `grok-3`                   |
 
 ---
 
 ## Contributing
 
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+Contributions are welcome! Here's how to get started:
 
 ```bash
-# Fork, Clone, Branch, Implement, Test, PR
-git checkout -b feature/my-feature
-# Make your changes
-pytest
-ruff check src/
-git push origin feature/my-feature
+# Fork & clone
+git clone https://github.com/your-username/TrustLens.git
+cd TrustLens
+
+# Create a branch
+git checkout -b feature/your-feature
+
+# Start development
+./start.sh
+
+# Make changes, test, then submit a pull request
 ```
+
+### Areas for Contribution
+
+- New analysis engines
+- Additional AI provider integrations
+- Browser extension
+- Improved documentation
+- Bug reports & fixes
 
 ---
 
 ## License
 
-MIT License &mdash; see [LICENSE](LICENSE) for details.
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
 ---
 
 <p align="center">
-  <strong>Built with security-first principles.</strong><br/>
-  AI advises. Rules decide. Evidence explains.
+  <sub>Built by <a href="https://github.com/abhishekayu">Abhishek Verma</a></sub>
 </p>
