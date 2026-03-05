@@ -199,6 +199,8 @@ def _print_banner() -> None:
 ║          {WHITE}L E N S   A I{CYAN}   Setup Wizard                      ║
 ║          {DIM}Explainable URL Trust Intelligence{RESET}{CYAN}{BOLD}                ║
 ║                                                              ║
+║          {DIM}by Abhishek Verma @abhishekayu{RESET}{CYAN}{BOLD}                    ║
+║                                                              ║
 ╚══════════════════════════════════════════════════════════════╝{RESET}
 """
     print(banner)
