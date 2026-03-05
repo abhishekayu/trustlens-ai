@@ -315,6 +315,25 @@ class TrackerDetectionResult(BaseModel):
     signals: list[str] = Field(default_factory=list)
 
 
+# ── Download & Permission Threat Detection ───────────────────────────────
+
+
+class DownloadThreatResult(BaseModel):
+    """Result from download threat, auto-download, and permission abuse detection."""
+
+    has_auto_download: bool = False
+    download_links: list[str] = Field(default_factory=list)
+    dangerous_file_types: list[str] = Field(default_factory=list)
+    auto_download_triggers: list[str] = Field(default_factory=list)
+    permissions_requested: list[str] = Field(default_factory=list)
+    permission_details: list[dict[str, Any]] = Field(default_factory=list)
+    notification_spam_detected: bool = False
+    pup_indicators: list[str] = Field(default_factory=list)
+    safety_score: float = 100.0      # 0-100, 100 = safe
+    risk_level: RiskLevel = RiskLevel.SAFE
+    signals: list[str] = Field(default_factory=list)
+
+
 # ── Threat Intelligence ──────────────────────────────────────────────────
 
 
@@ -470,6 +489,7 @@ class URLAnalysis(BaseModel):
     threat_intel: Optional[ThreatIntelResult] = None
     payment_detection: Optional[PaymentDetectionResult] = None
     tracker_detection: Optional[TrackerDetectionResult] = None
+    download_threat: Optional[DownloadThreatResult] = None
     trust_score: Optional[TrustScore] = None
 
     error: Optional[str] = None

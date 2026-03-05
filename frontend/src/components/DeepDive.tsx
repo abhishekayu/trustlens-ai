@@ -764,6 +764,130 @@ export default function DeepDive({ data, evidenceSignals }: Props) {
         )}
       </Section>
 
+      {/* ── Download & Permission Threat Detection ────────────── */}
+      <Section
+        title="Download & Permission Threats"
+        icon={Shield}
+        defaultOpen={
+          (data.download_threat?.has_auto_download ?? false) ||
+          (data.download_threat?.dangerous_file_types?.length ?? 0) > 0 ||
+          (data.download_threat?.permissions_requested?.length ?? 0) > 0
+        }
+        statusBadge={
+          data.download_threat
+            ? data.download_threat.risk_level === 'critical' || data.download_threat.risk_level === 'high'
+              ? <Badge variant="bad">{data.download_threat.risk_level.toUpperCase()}</Badge>
+              : data.download_threat.risk_level === 'medium'
+                ? <Badge variant="warn">MEDIUM</Badge>
+                : <Badge variant="good">Safe</Badge>
+            : <Badge variant="neutral">N/A</Badge>
+        }
+      >
+        {data.download_threat ? (
+          <>
+            <Row label="Auto-Download" value={
+              <Badge variant={data.download_threat.has_auto_download ? 'bad' : 'good'}>
+                {data.download_threat.has_auto_download ? 'DETECTED' : 'None'}
+              </Badge>
+            } />
+            <ScoreMeter score={data.download_threat.safety_score} label="Safety" />
+            <Row label="Risk Level" value={
+              <Badge variant={data.download_threat.risk_level === 'high' || data.download_threat.risk_level === 'critical' ? 'bad' : data.download_threat.risk_level === 'medium' ? 'warn' : 'good'}>
+                {data.download_threat.risk_level}
+              </Badge>
+            } />
+
+            {/* Dangerous File Types */}
+            {data.download_threat.dangerous_file_types.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Dangerous File Types Found:</p>
+                <div className="flex flex-wrap gap-1">
+                  {data.download_threat.dangerous_file_types.map((f: string, i: number) => (
+                    <Badge key={i} variant={f.includes('HIGH') ? 'bad' : 'warn'}>{f}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Download Links */}
+            {data.download_threat.download_links.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Download Links Detected:</p>
+                {data.download_threat.download_links.map((link: string, i: number) => (
+                  <div key={i} className="text-xs text-red-400 font-mono truncate flex items-start gap-1.5">
+                    <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" /> {link}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Auto-Download Triggers */}
+            {data.download_threat.auto_download_triggers.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Auto-Download Triggers:</p>
+                {data.download_threat.auto_download_triggers.map((t: string, i: number) => (
+                  <div key={i} className="text-xs text-red-400 flex items-start gap-1.5">
+                    <AlertTriangle className="w-3 h-3 mt-0.5 shrink-0" /> {t}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* Permissions Requested */}
+            {data.download_threat.permissions_requested.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800">
+                <p className="text-xs font-semibold text-gray-400 mb-2">Browser Permissions Requested</p>
+                <div className="space-y-1.5">
+                  {data.download_threat.permission_details.map((p, i) => (
+                    <div key={i} className="flex items-center justify-between text-xs">
+                      <span className="text-gray-300 flex items-center gap-1.5">
+                        <Lock className="w-3 h-3" /> {p.label}
+                      </span>
+                      <Badge variant={p.risk === 'high' ? 'bad' : p.risk === 'medium' ? 'warn' : 'neutral'}>
+                        {p.risk}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Notification Spam */}
+            {data.download_threat.notification_spam_detected && (
+              <div className="mt-2">
+                <Row label="Notification Spam" value={
+                  <Badge variant="bad">DETECTED</Badge>
+                } />
+              </div>
+            )}
+
+            {/* PUP Indicators */}
+            {data.download_threat.pup_indicators.length > 0 && (
+              <div className="mt-2">
+                <p className="text-[11px] text-gray-500 mb-1">Potentially Unwanted Program (PUP) Indicators:</p>
+                <div className="flex flex-wrap gap-1">
+                  {data.download_threat.pup_indicators.map((p: string, i: number) => (
+                    <Badge key={i} variant="warn">{p}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {data.download_threat.signals && data.download_threat.signals.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-800 space-y-1">
+                {data.download_threat.signals.map((s: string, i: number) => (
+                  <div key={i} className="text-xs text-gray-400 flex items-start gap-1.5">
+                    <Info className="w-3 h-3 mt-0.5 shrink-0 text-gray-500" /> {s}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        ) : (
+          <EmptyState message="Download & permission threat detection was not performed for this analysis" />
+        )}
+      </Section>
+
       {/* ── Screenshot Similarity ─────────────────────────────── */}
       <Section
         title="Screenshot / Visual Clone Detection"

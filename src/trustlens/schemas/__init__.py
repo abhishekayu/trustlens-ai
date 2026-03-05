@@ -20,6 +20,7 @@ from trustlens.models import (
     CommunityConsensus,
     ComponentScore,
     DomainIntelligence,
+    DownloadThreatResult,
     IntentCategory,
     LogoDetectionResult,
     PaymentDetectionResult,
@@ -263,6 +264,7 @@ class DeepDiveData(BaseModel):
     community_consensus: Optional[CommunityConsensus] = None
     payment_detection: Optional[PaymentDetectionResult] = None
     tracker_detection: Optional[TrackerDetectionResult] = None
+    download_threat: Optional[DownloadThreatResult] = None
     behavioral_signals: list[BehavioralSignal] = Field(default_factory=list)
     rule_signals: list[RuleSignal] = Field(default_factory=list)
 

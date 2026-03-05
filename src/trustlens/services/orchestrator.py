@@ -35,6 +35,7 @@ from trustlens.services.analysis.behavioral import BehavioralAnalyzer
 from trustlens.services.analysis.brand_similarity import BrandSimilarityEngine
 from trustlens.services.analysis.content_extractor import ContentExtractor
 from trustlens.services.analysis.domain_intel import DomainIntelligenceService
+from trustlens.services.analysis.download_threat_detector import DownloadThreatDetector
 from trustlens.services.analysis.logo_detection import LogoDetectionEngine
 from trustlens.services.analysis.payment_detector import PaymentDetector
 from trustlens.services.analysis.rules import RuleEngine
@@ -73,6 +74,7 @@ class AnalysisOrchestrator:
         self._logo_detector = LogoDetectionEngine()
         self._payment_detector = PaymentDetector()
         self._tracker_detector = TrackerDetector()
+        self._download_threat_detector = DownloadThreatDetector()
 
         # Phase 5 services (set externally via setters for DI)
         self._screenshot_engine: Optional[ScreenshotSimilarityEngine] = None
@@ -157,6 +159,7 @@ class AnalysisOrchestrator:
                 "headers": self._header_analyzer.analyze(crawl_result),
                 "payment": self._payment_detector.analyze(crawl_result, url),
                 "tracker": self._tracker_detector.analyze(crawl_result, url),
+                "download_threat": self._download_threat_detector.analyze(crawl_result, url),
             }
 
             if enable_domain_intel:
@@ -213,6 +216,7 @@ class AnalysisOrchestrator:
             analysis.community_consensus = results.get("community")
             analysis.payment_detection = results.get("payment")
             analysis.tracker_detection = results.get("tracker")
+            analysis.download_threat = results.get("download_threat")
 
             # ── Phase 2.5: Zero-Day Suspicion ────────────────────
             if enable_zeroday:

@@ -244,6 +244,7 @@ def _build_pipeline_steps(analysis: URLAnalysis) -> list[PipelineStep]:
         ("community", "Community Consensus", analysis.community_consensus),
         ("payment", "Payment Detection", analysis.payment_detection),
         ("tracker", "Tracker & Malware Detection", analysis.tracker_detection),
+        ("download_threat", "Download & Permission Threats", analysis.download_threat),
     ]
 
     for name, label, result in component_defs:
@@ -378,6 +379,21 @@ def _summarise_component(name: str, result) -> str:
                     parts.append(f"Fingerprinting: {len(result.fingerprinting_scripts)}")
                 return " · ".join(parts)
             return "Checked"
+        elif name == "download_threat":
+            if hasattr(result, 'has_auto_download'):
+                parts = []
+                if result.has_auto_download:
+                    parts.append("AUTO-DOWNLOAD detected")
+                if result.dangerous_file_types:
+                    parts.append(f"{len(result.dangerous_file_types)} dangerous files")
+                if result.permissions_requested:
+                    parts.append(f"{len(result.permissions_requested)} permissions")
+                if result.notification_spam_detected:
+                    parts.append("Notification spam")
+                if result.pup_indicators:
+                    parts.append(f"{len(result.pup_indicators)} PUP indicators")
+                return " · ".join(parts) if parts else "No download threats detected"
+            return "Checked"
     except Exception:
         pass
     return "Completed"
@@ -499,6 +515,7 @@ def _build_deep_dive(analysis: URLAnalysis) -> DeepDiveData:
         community_consensus=analysis.community_consensus,
         payment_detection=analysis.payment_detection,
         tracker_detection=analysis.tracker_detection,
+        download_threat=analysis.download_threat,
         behavioral_signals=analysis.behavioral_signals or [],
         rule_signals=analysis.rule_signals or [],
     )

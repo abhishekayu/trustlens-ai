@@ -222,6 +222,20 @@ export interface TrackerDetection {
   signals: string[]
 }
 
+export interface DownloadThreat {
+  has_auto_download: boolean
+  download_links: string[]
+  dangerous_file_types: string[]
+  auto_download_triggers: string[]
+  permissions_requested: string[]
+  permission_details: { permission: string; label: string; risk: string }[]
+  notification_spam_detected: boolean
+  pup_indicators: string[]
+  safety_score: number
+  risk_level: string
+  signals: string[]
+}
+
 export interface DeepDiveData {
   crawl: CrawlDetails | null
   domain_intel: DomainIntelSummary | null
@@ -234,6 +248,7 @@ export interface DeepDiveData {
   community_consensus: { url_or_domain: string; total_reports: number; phishing_reports: number; safe_reports: number; scam_reports: number; crowd_risk_score: number; consensus_confidence: number; last_report_at: string | null } | null
   payment_detection: PaymentDetection | null
   tracker_detection: TrackerDetection | null
+  download_threat: DownloadThreat | null
   behavioral_signals: BehavioralSignal[]
   rule_signals: RuleSignal[]
 }
