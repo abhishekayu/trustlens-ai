@@ -14,8 +14,8 @@ services:
       timeout: 10s
       retries: 3
 
-  frontend:
-    build: ./frontend
+  dashboard:
+    build: ./dashboard
     ports:
       - "5173:80"
     depends_on:

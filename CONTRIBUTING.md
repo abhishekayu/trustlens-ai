@@ -92,7 +92,7 @@ chmod +x start.sh
 ./start.sh
 ```
 
-The `start.sh` script handles virtual env detection, dependency installation, LLM provider setup wizard, and launches both backend (port 3010) and frontend (port 5173).
+The `start.sh` script handles virtual env detection, dependency installation, LLM provider setup wizard, and launches both backend (port 3010) and dashboard (port 5173).
 
 ### Manual Setup
 
@@ -118,10 +118,10 @@ cp .env.example .env
 # Edit .env → set TRUSTLENS_AI_PROVIDER and your API key
 ```
 
-#### Frontend
+#### Dashboard
 
 ```bash
-cd frontend
+cd dashboard
 npm install
 npm run dev
 ```
@@ -132,8 +132,8 @@ npm run dev
 # Terminal 1: Backend (PYTHONPATH=src is required)
 PYTHONPATH=src python3 -m uvicorn trustlens.main:app --host 0.0.0.0 --port 8000 --reload
 
-# Terminal 2: Frontend
-cd frontend && npm run dev
+# Terminal 2: Dashboard
+cd dashboard && npm run dev
 ```
 
 > **Note:** When using `./start.sh`, the backend runs on port **3010**. When starting manually, you can choose any port (default example uses **8000**).
@@ -196,7 +196,7 @@ PYTHONPATH=src python3 -c "from trustlens.main import app; print('OK')"
 PYTHONPATH=src python3 -m uvicorn trustlens.main:app --host 0.0.0.0 --port 8000
 ```
 
-### TypeScript/React (Frontend)
+### TypeScript/React (Dashboard)
 
 - **Framework:** React 19 with TypeScript 5.9
 - **Styling:** Tailwind CSS v4 (terminal/hacker theme — green `#00ff41`, cyan `#00ffff`)
@@ -206,7 +206,7 @@ PYTHONPATH=src python3 -m uvicorn trustlens.main:app --host 0.0.0.0 --port 8000
 - **Routing:** React Router v7
 
 ```bash
-cd frontend
+cd dashboard
 npm run build    # Type-check + build
 ```
 
@@ -396,7 +396,7 @@ All contributors are recognized in our releases. Significant contributions may b
 | ------------------- | ------------------------------------- | ------ |
 | Analysis engines    | Python, async, security               | High   |
 | AI providers        | LLM APIs, prompt engineering          | High   |
-| Frontend            | React 19, TypeScript, Tailwind CSS v4 | Medium |
+| Dashboard           | React 19, TypeScript, Tailwind CSS v4 | Medium |
 | Documentation       | Technical writing                     | Medium |
 | Testing             | Python, pytest                        | Medium |
 | DevOps              | Docker, CI/CD, shell scripting        | Medium |

@@ -175,7 +175,7 @@ class PipelineStep(BaseModel):
 
 
 class CrawlDetails(BaseModel):
-    """Crawl metadata surfaced to the frontend for full transparency."""
+    """Crawl metadata surfaced to the dashboard for full transparency."""
     final_url: str = ""
     status_code: int = 0
     load_time_ms: int = 0
@@ -194,7 +194,7 @@ class CrawlDetails(BaseModel):
 
 
 class DomainIntelSummary(BaseModel):
-    """Domain intelligence details for the frontend."""
+    """Domain intelligence details for the dashboard."""
     domain: str = ""
     registered_domain: str = ""
     tld: str = ""
@@ -211,7 +211,7 @@ class DomainIntelSummary(BaseModel):
 
 
 class BrandMatchSummary(BaseModel):
-    """Brand impersonation match details for the frontend."""
+    """Brand impersonation match details for the dashboard."""
     brand_name: str
     similarity_score: float
     domain_similarity: float = 0.0
@@ -222,7 +222,7 @@ class BrandMatchSummary(BaseModel):
 
 
 class SecurityHeadersSummary(BaseModel):
-    """Security headers analysis for the frontend."""
+    """Security headers analysis for the dashboard."""
     is_https: bool = False
     has_hsts: bool = False
     has_csp: bool = False
@@ -236,7 +236,7 @@ class SecurityHeadersSummary(BaseModel):
 
 
 class AIAnalysisSummary(BaseModel):
-    """AI analysis details for the frontend."""
+    """AI analysis details for the dashboard."""
     provider: str = ""
     model: str = ""
     deception_indicators: list[str] = Field(default_factory=list)

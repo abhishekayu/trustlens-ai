@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# TrustLens AI – One-command start (Backend + Frontend)
+# TrustLens AI – One-command start (Backend + Dashboard)
 #
 # Usage:  ./start.sh
 # Stop:   Ctrl+C
@@ -92,19 +92,19 @@ if ! "$PY" -m pip install -r requirements.txt --quiet 2>&1; then
 fi
 echo -e "  ${G}✓ Backend deps OK${D}"
 
-# Frontend deps
-echo -e "  ${C}npm install (frontend/)${D}"
-if ! (cd frontend && npm install 2>&1); then
+# Dashboard deps
+echo -e "  ${C}npm install (dashboard/)${D}"
+if ! (cd dashboard && npm install 2>&1); then
     echo ""
     echo -e "${R}${B}╔══════════════════════════════════════════════════╗${D}"
-    echo -e "${R}${B}║  ✗  Frontend dependency install failed!          ║${D}"
+    echo -e "${R}${B}║  ✗  Dashboard dependency install failed!          ║${D}"
     echo -e "${R}${B}╠══════════════════════════════════════════════════╣${D}"
-    echo -e "${R}${B}║${D}  Run manually:  ${Y}cd frontend && npm install${D}"
+    echo -e "${R}${B}║${D}  Run manually:  ${Y}cd dashboard && npm install${D}"
     echo -e "${R}${B}║${D}  Then restart:  ${Y}./start.sh${D}"
     echo -e "${R}${B}╚══════════════════════════════════════════════════╝${D}"
     exit 1
 fi
-echo -e "  ${G}✓ Frontend deps OK${D}"
+echo -e "  ${G}✓ Dashboard deps OK${D}"
 
 # ══════════════════════════════════════════════════════════════════════
 #  2. BACKEND  (port 3010 — kill previous if busy)
@@ -130,15 +130,15 @@ done
 echo -e "\n  ${G}✓ Backend → http://localhost:$BE_PORT${D}"
 
 # ══════════════════════════════════════════════════════════════════════
-#  3. FRONTEND  (port 5173 — kill previous if busy)
+#  3. DASHBOARD  (port 5173 — kill previous if busy)
 # ══════════════════════════════════════════════════════════════════════
 echo ""
-echo -e "${B}── Frontend ───────────────────────────────────────${D}"
+echo -e "${B}── Dashboard ──────────────────────────────────────${D}"
 
 lsof -iTCP:$FE_PORT -sTCP:LISTEN -t 2>/dev/null | xargs kill -9 2>/dev/null || true
 sleep 1
 
-cd frontend && npx vite --host &
+cd dashboard && npx vite --host &
 FE_PID=$!
 cd "$SCRIPT_DIR"
 sleep 3
@@ -150,7 +150,7 @@ echo ""
 echo -e "${G}${B}╔══════════════════════════════════════════════════╗${D}"
 echo -e "${G}${B}║            🚀  TrustLens AI Running               ║${D}"
 echo -e "${G}${B}╠══════════════════════════════════════════════════╣${D}"
-echo -e "${G}${B}║${D}  Frontend  → ${C}http://localhost:$FE_PORT${D}"
+echo -e "${G}${B}║${D}  Dashboard → ${C}http://localhost:$FE_PORT${D}"
 echo -e "${G}${B}║${D}  Backend   → ${C}http://localhost:$BE_PORT${D}"
 echo -e "${G}${B}║${D}  API Docs  → ${C}http://localhost:$BE_PORT/docs${D}"
 echo -e "${G}${B}╠══════════════════════════════════════════════════╣${D}"

@@ -93,7 +93,7 @@ Unlike opaque "safe/unsafe" verdicts, TrustLens shows you **exactly why** a URL 
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                    React Frontend (Vite)                     │
+│                    React Dashboard (Vite)                    │
 │  ScanPage → ResultsPage → ScoreGauge + SignalCards + DeepDive│
 └────────────────────────┬────────────────────────────────────┘
                          │ REST API
@@ -155,13 +155,13 @@ That's it. The `start.sh` script will:
 2. 📦 **Install all dependencies** — Both Python (`pip install -r requirements.txt`) and Node.js (`npm install`)
 3. 🎭 **Install Playwright Chromium** — For sandboxed browser crawling
 4. 🚀 **Start the backend** — FastAPI on `http://localhost:3010`
-5. ⚛️ **Start the frontend** — Vite dev server on `http://localhost:5173`
+5. ⚛️ **Start the dashboard** — Vite dev server on `http://localhost:5173`
 
 ```
 ╔══════════════════════════════════════════════════╗
 ║            🚀  TrustLens AI Running               ║
 ╠══════════════════════════════════════════════════╣
-║  Frontend  → http://localhost:5173               ║
+║  Dashboard → http://localhost:5173               ║
 ║  Backend   → http://localhost:3010               ║
 ║  API Docs  → http://localhost:3010/docs          ║
 ╠══════════════════════════════════════════════════╣
@@ -234,8 +234,8 @@ pip install -r requirements.txt
 # Install Playwright browser
 python3 -m playwright install chromium
 
-# Install frontend dependencies
-cd frontend && npm install && cd ..
+# Install dashboard dependencies
+cd dashboard && npm install && cd ..
 ```
 
 ### 2. Configure Environment
@@ -258,10 +258,10 @@ TRUSTLENS_GEMINI_MODEL=gemini-2.5-flash
 PYTHONPATH=src python3 -m uvicorn trustlens.main:app --host 0.0.0.0 --port 8000
 ```
 
-### 4. Start Frontend
+### 4. Start Dashboard
 
 ```bash
-cd frontend
+cd dashboard
 npm run dev
 ```
 
@@ -284,7 +284,7 @@ docker run -p 8000:8000 --env-file .env trustlens-ai
 docker-compose up
 ```
 
-This starts both backend (`:8000`) and frontend (`:5173`) containers.
+This starts both backend (`:8000`) and dashboard (`:5173`) containers.
 
 ---
 
@@ -455,7 +455,7 @@ TrustLens/
 │   ├── observability/          # Audit logging
 │   └── utils/                  # Utility functions
 │
-├── frontend/
+├── dashboard/
 │   ├── src/
 │   │   ├── pages/
 │   │   │   ├── ScanPage.tsx    # URL input + feature cards
@@ -506,7 +506,7 @@ TrustLens/
 | **BeautifulSoup + lxml** | HTML parsing & content extraction    |
 | **dnspython**            | DNS resolution                       |
 
-### Frontend
+### Dashboard
 
 | Technology          | Purpose                                |
 | ------------------- | -------------------------------------- |

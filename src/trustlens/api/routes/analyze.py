@@ -122,7 +122,7 @@ async def get_analysis(
             ai_explanation=ts.ai_explanation,
         )
 
-    # ── Build pipeline steps for the frontend ────────────────
+    # ── Build pipeline steps for the dashboard ────────────────
     pipeline_steps = _build_pipeline_steps(analysis)
 
     # ── Build deep dive data ─────────────────────────────────
@@ -198,7 +198,7 @@ async def submit_batch(
 
 def _build_pipeline_steps(analysis: URLAnalysis) -> list[PipelineStep]:
     """
-    Build the pipeline step list from analysis state so the frontend
+    Build the pipeline step list from analysis state so the dashboard
     can show real-time progress and, once done, what each component found.
     """
     st = analysis.status

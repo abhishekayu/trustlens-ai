@@ -41,7 +41,7 @@ const capabilities = [
 
 const techStack = [
   { icon: Cpu, label: 'FastAPI + Python 3.9', desc: 'High-performance async backend' },
-  { icon: Terminal, label: 'React 19 + TypeScript', desc: 'Type-safe modern frontend' },
+  { icon: Terminal, label: 'React 19 + TypeScript', desc: 'Type-safe modern dashboard' },
   { icon: Database, label: 'SQLite + Pydantic v2', desc: 'Lightweight data layer' },
   { icon: Network, label: 'Playwright Sandbox', desc: 'Headless browser crawling' },
   { icon: Layers, label: 'Multi-Provider AI', desc: 'Gemini, OpenAI, Anthropic, Grok' },
