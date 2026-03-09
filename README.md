@@ -1,17 +1,14 @@
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.11+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/FastAPI-0.115+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-  <img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-4.2-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+<img width="620" height="364" alt="Transparent Image Creation (2)" src="https://github.com/user-attachments/assets/9f21f7fc-389b-414d-991a-2f923169308f" />
+
+</p>
+<p align="center">
 
   <img src="https://img.shields.io/badge/LLM-Powered-purple?style=for-the-badge" alt="LLM Powered" />
   <img src="https://img.shields.io/badge/Generative_AI-Enabled-orange?style=for-the-badge" alt="Generative AI" />
 
   <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
 </p>
-
-<h1 align="center">🔍 TrustLens AI</h1>
 <p align="center"><strong>Explainable AI-Powered URL Trust Intelligence Engine</strong></p>
 <p align="center">
   <em>Drop any URL → get an instant, transparent trust score backed by 15+ analysis engines, AI deception classification, and full evidence breakdown.</em>
